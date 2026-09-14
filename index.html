@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0">
+
+    <title>HhH Stomp - Lyric Engine</title>
+        
+    <link rel="manifest" href="./manifest.json">
+    
+    <script src="assets/lyrics.js"></script> 
+<script>
+    const user =
+        currentUser();
+
+    if (user)
+    {
+        window.location.href =
+            "setlists.html";
+    }
+</script>
+
+    <link rel="stylesheet" href="assets/lyrics.css" >
+    
+    <script defer src="assets/index.js"></script>    
+    <script defer src="assets/common.js"></script>    
+
+</head>
+
+
+<body>
+
+    <main id="welcome-page">
+
+        <h1 class="welcome-title">
+            Sweet Water
+        </h1>
+
+
+        <section class="welcome-text">
+
+             <p>
+                This is VERY much in testing mode at the moment, practically you 
+                don't have to choose yourself more than once, but an entry point is needed for 
+                a website, when installled on mobile (to do) it should just work.<br>
+                In the meanwhile please don't mess with others profiles 
+                as that will just lead to more confusion 🙂 
+            </p>
+
+            <p>
+                There are quite a few known bugs I'm working on (nothing harmful) but if you come accross
+                any inconsistancies or you have ideas to improve please let me know.
+            </p>
+
+        </section>
+
+
+        <h2 class="choose-title">
+            Choose Yourself
+        </h2>
+
+
+        <div
+            id="user-buttons"
+            class="user-buttons"
+        >
+
+            <!--
+             * User buttons will be created here
+             * from band.json.
+             -->
+
+        </div>
+        
+          <section class="done-text">
+         
+          <h5>done: v1.2</h5>
+      
+        </section>
+    
+    </main>
+    
+<script>
+if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+        navigator.serviceWorker.register("./sw.js")
+            .then(registration => {
+                console.log("Service worker registered:", registration.scope);
+            })
+            .catch(error => {
+                console.error("Service worker registration failed:", error);
+            });
+    });
+}
+</script>
+
+</body>
+
+</html>

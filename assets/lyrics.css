@@ -1,0 +1,1258 @@
+/*
+ * lyrics.css
+ *
+ * song2html stylesheet
+ *
+ * Version 0.4 - themes and settings
+ */
+
+/*
+ * Theme colours
+ */
+
+
+:root {
+
+    --bg:             #1e2548;
+    --text:           #d8d6a8;
+
+    --section:        #d6c15f;
+    --section-size:   1.2em;
+
+    --chord:          #9fdc74;
+
+    --band-bg:        #7fbf7f;
+    --band-text:      #000000;
+
+    --personal-bg:    #8a3030;
+    --personal-text:  #fff080;
+
+    --scale:1;
+    --accent-colour:  #d6c15f;
+}
+
+
+
+body {
+    margin: 0;
+    padding: 0;
+
+/*    font-family: monospace;  */
+    font-family: "DejaVu Sans Mono", monospace;
+    font-size: calc(1.0rem * var(--scale));
+    line-height: 1.4;
+
+    background: var(--bg);
+    color: var(--text);
+    
+    touch-action: pan-y;
+    
+}
+
+/* Outer tempo frame */
+
+#tempo-frame {
+
+    width: 100%;
+
+    min-height: 100vh;
+
+}
+
+/* Main song container */
+
+#song-container {
+
+    max-width: 900px;
+
+    margin: 0 auto;
+
+    padding: 1em;
+
+}
+
+/* Application area */
+
+#app {
+
+    width: 100%;
+
+}
+
+
+
+.chords {
+    color: var(--chord);
+    font-weight: bold;
+    font-size: 1.0rem;
+    white-space: pre;
+}
+
+/* check to make sure it works again */
+
+.accidental {
+    font: inherit;
+    font-size: 1.0rem;
+    font-weight: bold;
+}
+
+.line-number
+{
+    color: var(--line-number);
+    font-size: 0.75rem;
+    font-weight: bold;
+    text-align: right;
+    
+    cursor: pointer;
+    user-select: none;
+
+}
+
+.line-number:hover
+{
+    text-decoration: underline;
+}
+
+.section-link
+{
+    cursor: pointer;
+
+    user-select: none;
+
+    opacity: .6;
+
+    font-size: .8rem;
+}
+
+.section-link:hover
+{
+    opacity: 1;
+}
+
+
+
+/* Burger menu */
+
+#burger-menu {
+
+   position: absolute;
+
+    top: 3em;
+    left: 7em;
+
+    z-index: 1000;
+
+    background: #30343b;
+    color: #eeeeee;
+    padding: 1em;
+    border-radius: 8px;
+    width: 250px;
+    border: 1px solid #555;
+/*   margin-left: 1em;*/ 
+    box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+}
+
+#burger-menu h3 {
+
+    margin-top: 0em;
+    margin-bottom: 0.4em;
+    font-size: 1.1rem;
+    text-align: left;    
+    padding: 0.2em 1em;
+
+}
+
+
+#burger-menu a {
+
+    color: #eeeeee;
+    text-decoration: none;
+    display: block;
+    padding: 0.3em 0;
+}
+
+
+.theme-option {
+
+    display: block;
+    padding: 0.6em;
+    margin-bottom: 0.5em;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+
+.default-theme-preview {
+
+    background: #20284a;
+    color: #d8c85a;
+    border: 1px solid #4fa65b;
+}
+
+.light-theme-preview {
+
+    background: #eee9dc;
+    color: #444444;
+    border: 1px solid #999999;
+}
+
+.dark-theme-preview {
+
+    background: #252525;
+    color: #dddddd;
+    border: 1px solid #777777;
+}
+
+.theme-option input {
+    display: none;
+}
+
+
+.light-theme {
+
+    --bg:            #f6f3e8;
+    --text:          #404040;
+
+    --section:       #7a6425;
+    --chord:         #2d5f2d;
+    --line-number:   #909090;
+
+    --band-bg:       #b9ddb4;
+    --band-text:     #202020;
+
+    --personal-bg:   #d07c7c;
+    --personal-text: #fff8b0;
+
+    --accent-colour: #3f154b;
+}
+
+.dark-theme {
+
+    --bg:            #2a2d31;
+    --text:          #d5d5d5;
+
+    --section:       #e0c96b;
+    --chord:         #8fcf87;
+    --line-number:   #707070;
+
+    --band-bg:       #5f875f;
+    --band-text:     #101010;
+
+    --personal-bg:   #7d4040;
+    --personal-text: #ffe080;
+
+    --accent-colour: #f0d65a;
+}
+
+.default-theme {
+
+    --bg:            #22294b;
+    --text:          #8fd26b;
+
+    --section:       #d9be55;
+    --chord:         #d8d3a2;
+    --line-number:   #6f6f6f;
+
+    --band-bg:       #6cb66c;
+    --band-text:     #101010;
+
+    --personal-bg:   #8a3030;
+    --personal-text: #fff080;
+
+    --link:          #d8c85a;
+
+    --accent-colour: #d9be55;
+}
+
+
+/*----------------------------------------------------------*/
+/* Beat Engine Colours                                       */
+/*----------------------------------------------------------*/
+
+.default-theme
+{
+    --tempo-on:  #d6c85b;
+    --tempo-off: #5a5a5a;
+}
+
+.dark-theme
+{
+    --tempo-on:  #ffe45c;
+    --tempo-off: #4a4a4a;
+}
+
+.light-theme
+{
+    --tempo-on:  #1f56c8;
+    --tempo-off: #c7c7c7;
+}
+
+.beat-led
+{
+    background: var(--tempo-off);
+
+    border-radius: 50%;
+
+    transition: background .12s ease;
+}
+
+.beat-led.active
+{
+    background: var(--tempo-on);
+}
+
+.big-tempo-flash
+{
+    box-shadow:
+        inset 0 0 0 14px var(--tempo-on);
+
+    transition:
+        box-shadow .02s linear;
+}
+
+
+
+a {
+
+    color: var(--link);
+    text-decoration: none;
+}
+
+
+.band-note {
+
+    background: var(--band-bg);
+    color: var(--band-text);
+
+    padding: 0.25em 0.5em;
+
+    margin: 0.5em 0;
+}
+
+
+.personal-note {
+
+    background: var(--personal-bg);
+    color: var(--personal-text);
+
+    font-size: 0.7rem;
+
+    padding: 0.2em 0.5em;
+
+    margin: 0.2em 0;
+}
+
+
+.lyrics {
+    color: var(--text);
+    white-space: pre;
+}
+
+.chord-lyric {
+    margin-bottom: 0.2em;
+}
+
+.song-section h2 {
+    color: var(--section);
+    font-size: var(--section-size);
+    font-family:
+        Arial,
+        "DejaVu Sans",
+        "Liberation Sans",
+        sans-serif;    
+    font-weight: bold;
+    margin-top: 1.0rem;
+    margin-bottom: 0.75rem;
+}
+
+header {
+    margin-bottom: 2rem;
+}
+
+#navbar {
+
+    display: flex;
+    align-items: center;
+
+    padding: 0.5em 1em;
+
+}
+
+.song-title {
+    flex: 1;
+    font-family:
+        Arial,
+        "DejaVu Sans",
+        "Liberation Sans",
+        sans-serif;  
+    text-align: center;
+    margin: 0;
+    font-size: 1.6rem;
+    font-weight: bold;
+}
+
+#menu-button,
+#prev-song,
+#next-song {
+
+    font-size: 2.0rem;
+    padding: 0.5em 1em;
+    
+/*    text-decoration: none;  
+      */
+
+    box-shadow:
+      inset 0 1.5px 0.2px rgba(0,0,0,.45);
+
+
+
+}
+
+#prev-song {
+    margin-left: 0.6em;
+}
+
+#next-song {
+    margin-left: 0.6em;
+}
+
+#footerbar {
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5.5em;
+    padding: 0.5em 1em;
+
+}
+
+#footerbar a
+{
+    flex: 0 0 auto;
+}
+
+
+
+#song-lists {
+
+    flex: 0 0 auto;
+    width: auto;
+
+    padding: 0;
+
+    text-decoration: none;
+    text-align: center;
+
+}
+
+#prev-song-footer,
+#next-song-footer {
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 3em;
+    min-height: 2.5em;
+    padding: 0.3em 0.6em;
+
+    font-size: 3.0rem;
+    text-decoration: none;
+
+}
+
+.song-notes {
+    text-align: left;
+    margin-bottom: 2rem;
+    padding: 0.5em;
+    border-left: 4px solid var(--section);
+}
+
+.bar-line {
+    white-space: pre;
+    color: var(--chord: );
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.blank-line {
+    height: 1px;
+}
+
+
+#measure {
+
+    position: absolute;
+    white-space: pre;
+    opacity: 0.3;
+/*    top: 12em; */
+    
+    white-space: normal;
+ 
+    font: inherit;
+
+    padding: 0;
+    margin: 0;
+
+}
+
+/*----------------------------------------------------------*/
+/* Tempo Button                                              */
+/*----------------------------------------------------------*/
+
+#song-controls
+{
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    margin: .5em 0;
+}
+
+#tempo-button
+{
+    display: flex;
+
+    gap: .9em;
+
+    padding: .35em 1.5em;
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+}
+
+.beat-led
+{
+    width: 1.4em;
+
+    height: 1.4em;
+
+    border-radius: 50%;
+
+    background: var(--tempo-off);
+    
+    box-shadow:
+    inset 0 1px 2px rgba(0,0,0,.45),
+    0 1px 2px rgba(255,255,255,.12);
+
+/*   box-shadow:
+      inset 0 1px 2px rgba(0,0,0,.45);
+*/
+ 
+ 
+    transition: background .1s ease;
+}
+
+.beat-led.active
+{
+    background: var(--tempo-on);
+    
+    box-shadow:
+    0 0 10px var(--tempo-on);
+
+/*    box-shadow:
+     0 0 8px var(--tempo-on);
+
+*/     
+     
+}
+
+#tempo-status
+{
+    margin-top: .25em;
+
+    font-size: .55em;
+
+    font-weight: bold;
+
+    color: var(--tempo-on);
+}
+
+
+/*----------------------------------------------------------*/
+/* Settings                                                  */
+/*----------------------------------------------------------*/
+
+
+
+.preview-small
+{
+    font-size: 0.8rem;
+}
+
+.preview-default
+{
+    font-size: 1.0rem;
+}
+
+.preview-large
+{
+    font-size: 1.3rem;
+}
+
+.preview-xlarge
+{
+    font-size: 1.7rem;
+}
+
+
+.hide-chords .chords
+{
+    display: none;
+}
+
+.hide-line-numbers .line-number
+{
+    display: none;
+}
+
+/* invert colours
+  
+body
+{
+    filter: invert(100%);
+}
+*/
+
+#band-members
+{
+    padding-left: 1em;
+}
+
+.band-member
+{
+    display: block;
+    margin-bottom: 0.3rem;
+}
+
+.band-inline-note
+{
+    font-size: 0.75rem;
+    font-weight: bold;
+}
+
+/* notes */
+
+.song-notes
+{
+    margin: 0 0 1.0em 0;
+}
+
+.band-note
+{
+    display: inline-block;
+
+    background: #2f4f68;
+
+    color: white;
+
+    font-family:
+        Arial,
+        "DejaVu Sans",
+        "Liberation Sans",
+        sans-serif;
+
+
+    font-weight: normal;
+
+    padding: .25em .6em;
+
+    margin: .15em 0;
+
+    border-radius: .35em;
+    
+    white-space: pre-line;
+}
+
+.user-note
+{
+    display: inline-block;
+
+    background: #006400;
+
+    color: white;
+
+    font-family:
+        Arial,
+        "DejaVu Sans",
+        "Liberation Sans",
+        sans-serif;
+
+
+    font-weight: normal;
+
+    padding: .25em .6em;
+
+    margin: .15em 0;
+
+    margin-left: 1em;
+
+    border-radius: .35em;
+    
+    white-space: pre-line;
+}
+
+
+
+.cue
+{
+    display: inline-block;
+
+    font-size: .75rem;
+
+    font-family:
+        Arial,
+        "DejaVu Sans",
+        "Liberation Sans",
+        sans-serif;
+
+
+
+    padding: .08em .35em;
+
+    border-radius: .25em;
+
+    margin: .08em 0;
+}
+
+.band-cue
+{
+    background: #2f4f68;
+
+    color: white;
+
+    font-weight: bold;
+}
+
+.user-cue
+{
+    background: #006400;
+
+    color: white;
+
+    font-weight: normal;
+    
+    font-family:
+        Arial,
+        "DejaVu Sans",
+        "Liberation Sans",
+        sans-serif;
+
+    margin-left: 1em;
+}
+
+.other-user-note {
+    
+    background: #59643a;
+    color:  #aaa;
+    
+}
+
+
+/*----------------------------------------------------------*/
+/* notes editor                                             */
+/*----------------------------------------------------------*/
+
+
+#notes-editor
+{
+    position: fixed;
+
+    top: 0;
+    left: 0;
+ 
+    width: 100vw;
+    height: 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    background: rgba(0,0,0,.25);
+
+    z-index: 9999;
+}
+
+.hidden
+{
+    display: none !important;
+}
+
+.notes-editor-window
+{
+    background: var(--background-colour);
+    color: var(--accent-colour);
+
+    width: 70%;
+    max-width: 1000px;
+    max-height: 85vh;
+
+    overflow-y: auto;
+
+    padding: .4rem .8rem;
+  
+/*    border: 2px solid var(--accent-colour); */
+
+    border-radius: .4rem;
+    
+    cursor: pointer;
+    
+    box-shadow:
+    0 0 30px rgba(0,0,0,.85);
+}
+
+.notes-editor-window button:hover
+{
+    opacity: .85;
+}
+
+.notes-group
+{
+    margin-bottom: 1.5rem;
+}
+
+.notes-table
+{
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.notes-table th,
+.notes-table td
+{
+    padding: .4rem;
+
+    text-align: left;
+}
+
+.notes-table input
+{
+    width: 100%;
+    box-sizing: border-box;
+    padding: .35rem;
+}
+
+#song-notes
+{
+    width: 100%;
+
+    box-sizing: border-box;
+
+    margin: .5rem 0 1rem 0;
+}
+
+.notes-buttons
+{
+    display: flex;
+    justify-content: flex-end;
+    gap: .75rem;
+}
+
+.notes-group h3
+{
+    margin-bottom: .5rem;
+
+    color: var(--heading-colour);
+
+    padding-bottom: .25rem;
+}
+
+.notes-table th
+{
+    text-align: left;
+
+    padding-bottom: .5rem;
+
+    color: var(--heading-colour);
+}
+
+.notes-table td
+{
+    padding: .3rem 0;
+}
+
+
+.notes-table input,
+
+
+#song-notes
+{
+    background: var(--bg);
+    color: var(--text);
+
+    border: 1px solid var(--accent-colour);
+
+    padding: .4rem;
+
+    box-sizing: border-box;
+
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.notes-table input::placeholder,
+#song-notes::placeholder
+{
+    color: var(--text);
+    opacity: .6;
+}
+
+/*
+ * Help popup overlay.
+ *
+ * Hidden until the Help link is clicked.
+ */
+
+#help-overlay
+{
+    display: none;
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 1000;
+
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(0, 0, 0, 0.55);
+}
+
+/*
+ * Visible Help overlay.
+ */
+#help-overlay.help-visible
+{
+    display: flex;
+}
+
+/*
+ * Help popup itself.
+ */
+#help-popup
+{
+    position: relative;
+
+    width: 70%;
+    max-width: 700px;
+
+    max-height: 75vh;
+
+    overflow-y: auto;
+
+    padding: 1.5em;
+
+    box-sizing: border-box;
+
+    background: #151a19;
+
+    color: var(--accent-colour);
+
+    border: 2px solid var(--accent-colour);
+
+    border-radius: 8px;
+}
+
+/*
+ * Close button.
+ */
+#help-close
+{
+    position: absolute;
+
+    top: 0.35em;
+    right: 0.5em;
+
+    border: none;
+
+    background: none;
+
+    color: var(--accent-colour);
+
+    font-size: 2rem;
+
+    cursor: pointer;
+}
+
+/*
+ * Leave room for the close button.
+ */
+#help-content
+{
+    padding-right: 2em;
+}
+
+
+/*
+ * Welcome page
+ *
+ * These styles are specific to index.html.
+ */
+
+
+/*
+ * Main welcome page container.
+ */
+#welcome-page
+{
+    width: 100%;
+
+    max-width: 900px;
+
+    margin: 0 auto;
+
+    padding: 2em 1em 3em 1em;
+
+    box-sizing: border-box;
+
+    text-align: center;
+}
+
+
+/*
+ * Large Western/cowboy-style welcome heading.
+ *
+ * The font stack uses only fonts normally available
+ * on Linux/Windows/macOS systems.
+ */
+.welcome-title
+{
+    margin: 0.3em 0 0.4em 0;
+
+    font-family:
+        "Rockwell",
+        "DejaVu Serif",
+        "Liberation Serif",
+        serif;
+
+    font-size: clamp(
+        4rem,
+        12vw,
+        8rem
+    );
+
+    font-weight: bold;
+
+    letter-spacing: 0.05em;
+
+    text-shadow:
+        4px 4px 0 rgba(0, 0, 0, 0.45);
+}
+
+
+/*
+ * Welcome/help text.
+ */
+.welcome-text
+{
+    width: 70%;
+
+    margin: 0 auto 2.5em auto;
+
+    font-family:
+        Georgia,
+        "DejaVu Serif",
+        "Liberation Serif",
+        serif;
+
+    font-size: 1.1rem;
+
+    line-height: 1.6;
+
+    text-align: left;
+
+    text-shadow:
+        1px 1px 2px rgba(0, 0, 0, 0.45);
+}
+
+
+/*
+ * Choose Yourself heading.
+ */
+.choose-title
+{
+    margin: 1em 0 1em 0;
+
+    font-family:
+        Arial,
+        "DejaVu Sans",
+        "Liberation Sans",
+        sans-serif;
+
+    font-size: 2rem;
+
+    text-shadow:
+        2px 2px 3px rgba(0, 0, 0, 0.4);
+}
+
+
+/*
+ * User button container.
+ *
+ * Two columns normally.
+ */
+.user-buttons
+{
+    width: 70%;
+
+    margin: 0 auto;
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(2, 1fr);
+
+    gap: 1em;
+}
+
+
+/*
+ * User buttons.
+ */
+.user-buttons button
+{
+    min-height: 3.5rem;
+
+    padding: 0.8em 1em;
+
+    border: 1px solid
+        var(--accent-colour);
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            to bottom,
+            #303534,
+            #101413
+        );
+
+    color:
+        var(--accent-colour);
+
+    font-family:
+        Arial,
+        "DejaVu Sans",
+        "Liberation Sans",
+        sans-serif;
+
+    font-size: 1.15rem;
+
+    font-weight: bold;
+
+    text-shadow:
+        0 0 6px rgba(214, 193, 95, 0.35);
+
+    box-shadow:
+        0 3px 8px rgba(0, 0, 0, 0.5);
+
+    cursor: pointer;
+}
+
+
+/*
+ * Slight visual response when a button is pressed.
+ */
+.user-buttons button:active
+{
+    transform: translateY(2px);
+
+    box-shadow:
+        0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+
+/*
+ * Three columns when there are more than five users.
+ *
+ * JavaScript will add this class later.
+ */
+.user-buttons.three-columns
+{
+    grid-template-columns:
+        repeat(3, 1fr);
+}
+
+
+/*
+ * Small screens.
+ *
+ * Keep the buttons comfortable to touch.
+ */
+@media (max-width: 600px)
+{
+    #welcome-page
+    {
+        padding-top: 1em;
+    }
+
+    .welcome-text
+    {
+        width: 90%;
+    }
+
+    .user-buttons
+    {
+        width: 90%;
+
+        grid-template-columns:
+            1fr;
+    }
+
+    .user-buttons.three-columns
+    {
+        grid-template-columns:
+            1fr;
+    }
+}
+
+
+#auto-scroll-controls
+{
+    position: fixed;
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+
+    display: flex;
+    align-items: center;
+    gap: 4px;
+
+    padding: 4px 6px;
+
+    background: rgba(0, 0, 0, 0.15);
+
+    border-radius: 6px;
+
+    z-index: 1000;
+}
+
+#auto-scroll-controls button,
+#auto-scroll-controls input
+{
+    height: 32px;
+    box-sizing: border-box;
+}
+
+#auto-scroll-controls button
+{
+    min-width: 32px;
+
+    padding: 2px 6px;
+
+    font-size: 1rem;
+}
+
+#auto-scroll-speed
+{
+    width: 55px;
+
+    padding: 2px 4px;
+
+    text-align: center;
+}

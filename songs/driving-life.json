@@ -1,0 +1,13 @@
+{
+    "song": {
+        "id": "Drivin My Life Away",
+        "title": "Drivin My Life Away",
+        "artist": "",
+        "version": "1.0"
+    },
+    "tempo": {
+        "bpm": 130,
+        "timeSignature": "4/4",
+        "countInBars": 4
+    }
+}

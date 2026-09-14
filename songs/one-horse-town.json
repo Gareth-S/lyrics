@@ -1,0 +1,13 @@
+{
+    "song": {
+        "id": "One horse town",
+        "title": "One horse town",
+        "artist": "",
+        "version": "1.0"
+    },
+    "tempo": {
+        "bpm": 480,
+        "timeSignature": "4/4",
+        "countInBars": 4
+    }
+}

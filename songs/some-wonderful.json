@@ -1,0 +1,13 @@
+{
+    "song": {
+        "id": "Some Kind Of Wonderful",
+        "title": "Some Kind Of Wonderful",
+        "artist": "",
+        "version": "1.0"
+    },
+    "tempo": {
+        "bpm": 120,
+        "timeSignature": "4/4",
+        "countInBars": 4
+    }
+}

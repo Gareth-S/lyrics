@@ -1,12 +1,12 @@
 {
     "song": {
-        "id": "Wagon Wheel",
-        "title": "Wagon Wheel",
+        "id": "Guitar Man",
+        "title": "Guitar Man",
         "artist": "",
         "version": "1.0"
     },
     "tempo": {
-        "bpm": 480,
+        "bpm": 143,
         "timeSignature": "4/4",
         "countInBars": 4
     }

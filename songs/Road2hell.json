@@ -1,0 +1,13 @@
+{
+    "song": {
+        "id": "The Road To Hell",
+        "title": "The Road To Hell",
+        "artist": "",
+        "version": "1.0"
+    },
+    "tempo": {
+        "bpm": 135,
+        "timeSignature": "4/4",
+        "countInBars": 4
+    }
+}

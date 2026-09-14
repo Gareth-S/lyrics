@@ -1147,8 +1147,8 @@ body
 
     font-weight: bold;
 
-    text-shadow:
-        0 0 6px rgba(214, 193, 95, 0.35);
+/*    text-shadow:
+        0 0 6px rgba(214, 193, 95, 0.35); */
 
     box-shadow:
         0 3px 8px rgba(0, 0, 0, 0.5);

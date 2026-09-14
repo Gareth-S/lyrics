@@ -1400,7 +1400,7 @@ console.log(
             configureBeatEngine(songData.tempo);
         }           
 
-        startBeatEngine();
+        // startBeatEngine();  // Manual activation only  
         
         insertBandNotes(songData.songNotes);
         insertSectionBandNotes(songData.sections);

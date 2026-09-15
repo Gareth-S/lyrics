@@ -1,4 +1,4 @@
-const CACHE_NAME = "hhh-stomp-v1.5";
+const CACHE_NAME = "hhh-stomp-v1.1";
 
 const APP_FILES = [
     "./",

@@ -1,4 +1,5 @@
 {
+    "song_count": 43,
     "songs": [
         {
             "title": "00-break",
@@ -89,6 +90,10 @@
             "file": "songs/Ride_on.html"
         },
         {
+            "title": "Riding With The King",
+            "file": "songs/riding_king.html"
+        },
+        {
             "title": "Rikki don't lose that number",
             "file": "songs/Rikki.html"
         },
@@ -125,6 +130,10 @@
             "file": "songs/Road2hell.html"
         },
         {
+            "title": "Treat Me So Lowdown",
+            "file": "songs/treat_me.html"
+        },
+        {
             "title": "Tulsa Time",
             "file": "songs/Tulsa.html"
         },
@@ -143,6 +152,10 @@
         {
             "title": "Yellow Ledbetter",
             "file": "songs/Yellow_ledbetter.html"
+        },
+        {
+            "title": "You Never Can Tell",
+            "file": "songs/never_tell.html"
         },
         {
             "title": "You Shook Me All Night Long",

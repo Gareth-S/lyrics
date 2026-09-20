@@ -1,0 +1,13 @@
+{
+    "song": {
+        "id": "Treat Me So Lowdown",
+        "title": "Treat Me So Lowdown",
+        "artist": "",
+        "version": "1.1"
+    },
+    "tempo": {
+        "bpm": 480,
+        "timeSignature": "4/4",
+        "countInBars": 4
+    }
+}

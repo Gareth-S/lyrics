@@ -19,13 +19,61 @@ async function getUpdateList() {
     return data.files;
 }
 
-async function cacheInstallFiles() {
+async function cacheInstallFiles(progressCallback = null) {
+
     const files = await getUpdateList();
     const cache = await caches.open(CACHE_NAME);
     const results = [];
 
-    // Cache install files individually so one bad file does not abort the update.
-    for (const file of files) {
+    for (let i = 0; i < files.length; i++) {
+
+        const file = files[i];
+
+        if (progressCallback) {
+
+            progressCallback({
+                phase: "core",
+                current: i + 1,
+                total: files.length,
+                file
+            });
+        }
+
+        try {
+
+            const response =
+                await fetch(file, { cache: "no-cache" });
+
+            if (!response.ok) {
+                throw new Error(`HTTP ${response.status}`);
+            }
+
+            await cache.put(file, response.clone());
+
+            results.push({
+                file,
+                ok: true
+            });
+
+        } catch (error) {
+
+            console.warn(
+                "Song2HTML: could not cache",
+                file,
+                error
+            );
+
+            results.push({
+                file,
+                ok: false,
+                error: String(error)
+            });
+        }
+    }
+
+    return results;
+}        
+        
         try {
             const response = await fetch(file, { cache: "no-cache" });
 
@@ -33,6 +81,7 @@ async function cacheInstallFiles() {
                 throw new Error(`HTTP ${response.status}`);
             }
 
+            
             await cache.put(file, response.clone());
 
             results.push({
@@ -139,33 +188,62 @@ self.addEventListener("fetch", event => {
  *
  * to refresh the install/application files.
  */
+
 self.addEventListener("message", event => {
+
     if (!event.data || event.data.type !== "UPDATE_CORE") {
         return;
     }
 
-    event.waitUntil(
-        cacheInstallFiles()
-            .then(results => {
-                if (event.ports && event.ports[0]) {
-                    event.ports[0].postMessage({
-                        ok: true,
-                        results
-                    });
-                }
-            })
-            .catch(error => {
-                console.error(
-                    "Song2HTML: core update failed",
-                    error
-                );
 
-                if (event.ports && event.ports[0]) {
-                    event.ports[0].postMessage({
-                        ok: false,
-                        error: String(error)
-                    });
-                }
-            })
+    event.waitUntil(
+
+        cacheInstallFiles(progress => {
+
+            /*
+             * Send progress back to settings.js.
+             */
+            if (event.ports && event.ports[0]) {
+
+                event.ports[0].postMessage({
+                    type: "UPDATE_PROGRESS",
+                    phase: progress.phase,
+                    current: progress.current,
+                    total: progress.total,
+                    file: progress.file
+                });
+            }
+
+        })
+
+        .then(results => {
+
+            if (event.ports && event.ports[0]) {
+
+                event.ports[0].postMessage({
+                    type: "UPDATE_COMPLETE",
+                    ok: true,
+                    results
+                });
+            }
+
+        })
+
+        .catch(error => {
+
+            console.error(
+                "Song2HTML: core update failed",
+                error
+            );
+
+            if (event.ports && event.ports[0]) {
+
+                event.ports[0].postMessage({
+                    type: "UPDATE_COMPLETE",
+                    ok: false,
+                    error: String(error)
+                });
+            }
+        })
     );
 });

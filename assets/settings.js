@@ -581,6 +581,7 @@ async function updateNow() {
 /*
  * Send a message to the service worker and wait for its reply.
  */
+
 function sendServiceWorkerMessage(serviceWorker, message) {
 
     return new Promise((resolve, reject) => {
@@ -589,32 +590,62 @@ function sendServiceWorkerMessage(serviceWorker, message) {
 
         const timeout =
             setTimeout(() => {
+
                 reject(
-                    new Error("Service worker update timed out")
+                    new Error(
+                        "Service worker update timed out"
+                    )
                 );
-            }, 60000);
+
+            }, 120000);
 
 
         channel.port1.onmessage = event => {
 
-            clearTimeout(timeout);
-
             const data = event.data;
 
-            if (!data || data.ok !== true) {
+
+            /*
+             * Progress message.
+             */
+            if (data && data.type === "UPDATE_PROGRESS") {
+
+                setUpdateStatus(
+                    `Application files: ${data.current} / ${data.total}<br>` +
+                    `Loading: ${data.file}`
+                );
+
+                return;
+            }
+
+
+            /*
+             * Final response.
+             */
+            if (!data || data.type !== "UPDATE_COMPLETE") {
+                return;
+            }
+
+
+            clearTimeout(timeout);
+
+
+            if (!data.ok) {
 
                 reject(
                     new Error(
-                        data && data.error
-                            ? data.error
-                            : "Service worker update failed"
+                        data.error ||
+                        "Service worker update failed"
                     )
                 );
 
                 return;
             }
 
-            resolve(data.results || []);
+
+            resolve(
+                data.results || []
+            );
         };
 
 
@@ -625,17 +656,16 @@ function sendServiceWorkerMessage(serviceWorker, message) {
     });
 }
 
-
 /*
  * Build the list of content files that should be cached.
  */
+
 async function buildContentFileList() {
 
     const files = [];
 
-
     /*
-     * Catalogue.
+     * Load catalogue once.
      */
     const catalogueResponse =
         await fetch(
@@ -644,33 +674,57 @@ async function buildContentFileList() {
         );
 
     if (!catalogueResponse.ok) {
-
         throw new Error(
             `Could not load ${CATALOGUE_FILE}: HTTP ${catalogueResponse.status}`
         );
     }
 
-
     const catalogue =
         await catalogueResponse.json();
 
-
     if (!Array.isArray(catalogue.songs)) {
-
         throw new Error(
             "catalogue.json does not contain a songs array"
         );
     }
 
-
-    /*
-     * Add catalogue itself.
-     */
     files.push(CATALOGUE_FILE);
 
 
     /*
-     * Add each song's HTML and normal JSON file.
+     * Load band.json ONCE, not once per song.
+     */
+    let members = [];
+
+    try {
+
+        const bandResponse =
+            await fetch(
+                BAND_FILE,
+                { cache: "no-cache" }
+            );
+
+        if (bandResponse.ok) {
+
+            const band =
+                await bandResponse.json();
+
+            if (Array.isArray(band.members)) {
+                members = band.members;
+            }
+        }
+
+    } catch (error) {
+
+        console.warn(
+            "Song2HTML: could not load band.json",
+            error
+        );
+    }
+
+
+    /*
+     * Build the song file list.
      */
     for (const song of catalogue.songs) {
 
@@ -684,12 +738,10 @@ async function buildContentFileList() {
 
 
         /*
-         * Convert:
+         * Normal song JSON.
          *
          * songs/My Song.html
-         *
-         * into:
-         *
+         *       ->
          * songs/My Song.json
          */
         const jsonFile =
@@ -703,53 +755,21 @@ async function buildContentFileList() {
 
         /*
          * Personal member files.
-         *
-         * These are only added if they actually exist.
          */
-        try {
+        const baseName =
+            htmlFile
+                .replace(/^songs\//, "")
+                .replace(/\.html$/i, "");
 
-            const bandResponse =
-                await fetch(
-                    BAND_FILE,
-                    { cache: "no-cache" }
-                );
 
-            if (!bandResponse.ok) {
-                continue;
+        for (const member of members) {
+
+            const memberFile =
+                `songs/${baseName}.${member}.json`;
+
+            if (await fileExists(memberFile)) {
+                files.push(memberFile);
             }
-
-            const band =
-                await bandResponse.json();
-
-
-            if (!Array.isArray(band.members)) {
-                continue;
-            }
-
-
-            for (const member of band.members) {
-
-                const baseName =
-                    htmlFile
-                        .replace(/^songs\//, "")
-                        .replace(/\.html$/i, "");
-
-
-                const memberFile =
-                    `songs/${baseName}.${member}.json`;
-
-
-                if (await fileExists(memberFile)) {
-                    files.push(memberFile);
-                }
-            }
-
-        } catch (error) {
-
-            console.warn(
-                "Song2HTML: could not check member files",
-                error
-            );
         }
     }
 

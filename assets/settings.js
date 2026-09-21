@@ -22,6 +22,10 @@ function initialiseSettings()
     attachStaticListeners();
 
     loadBand();
+    
+    initialiseUpdateControls();
+    checkForUpdates();
+    
 }
 
 function attachStaticListeners()
@@ -389,9 +393,581 @@ function populateBandMembers(members)
     
 }
 
-// loadSettings();
 
 
+/* =========================================================
+   PWA UPDATE / CACHE MANAGEMENT
+   ========================================================= */
 
+const UPDATE_FILE = "assets/update.json";
+const CATALOGUE_FILE = "assets/catalogue.json";
+const BAND_FILE = "assets/band.json";
+
+const UPDATE_TIME_KEY = "song2html-last-update";
+const UPDATE_LOG_KEY = "song2html-update-log";
+const UPDATE_LOG_SIZE = 3;
+
+
+/*
+ * Initialise the update controls.
+ */
+function initialiseUpdateControls() {
+
+    const updateButton = document.getElementById("update-now");
+
+    if (updateButton) {
+        updateButton.addEventListener("click", updateNow);
+    }
+
+    showLastUpdate();
+    showUpdateLog();
+}
+
+
+/*
+ * Ask the browser to check whether a newer service worker
+ * is available.
+ *
+ * This does NOT download all songs.
+ * It simply checks for a newer application/service-worker
+ * version in the background.
+ */
+async function checkForUpdates() {
+
+    if (!("serviceWorker" in navigator)) {
+        return;
+    }
+
+    try {
+
+        const registration =
+            await navigator.serviceWorker.getRegistration();
+
+        if (!registration) {
+            return;
+        }
+
+        await registration.update();
+
+    } catch (error) {
+
+        console.warn(
+            "Song2HTML: background update check failed",
+            error
+        );
+    }
+}
+
+
+/*
+ * Manual "Update now".
+ *
+ * 1. Refresh application/install files through the service worker.
+ * 2. Download the catalogue.
+ * 3. Download all song HTML/JSON files.
+ * 4. Record the last few successful downloads.
+ */
+async function updateNow() {
+
+    const button = document.getElementById("update-now");
+
+    if (button) {
+        button.disabled = true;
+    }
+
+    setUpdateStatus("Updating...");
+
+    try {
+
+        /*
+         * Get the active service worker.
+         */
+        const registration =
+            await navigator.serviceWorker.getRegistration();
+
+        if (!registration || !registration.active) {
+            throw new Error("No active service worker");
+        }
+
+
+        /*
+         * Tell the service worker to refresh the
+         * application/install files.
+         */
+        const coreResults =
+            await sendServiceWorkerMessage(
+                registration.active,
+                { type: "UPDATE_CORE" }
+            );
+
+
+        /*
+         * Build the list of song/content files.
+         */
+        const contentFiles =
+            await buildContentFileList();
+
+
+        /*
+         * Download/cache the content files.
+         */
+        const contentResults =
+            await cacheContentFiles(contentFiles);
+
+
+        /*
+         * Combine successful results.
+         */
+        const successfulFiles = [
+
+            ...coreResults
+                .filter(result => result.ok)
+                .map(result => result.file),
+
+            ...contentResults
+                .filter(result => result.ok)
+                .map(result => result.file)
+
+        ];
+
+
+        /*
+         * Record the update.
+         */
+        recordUpdate(successfulFiles);
+
+
+        const failedCount =
+            coreResults.filter(result => !result.ok).length +
+            contentResults.filter(result => !result.ok).length;
+
+
+        if (failedCount > 0) {
+
+            setUpdateStatus(
+                `Update complete with ${failedCount} error(s).`
+            );
+
+        } else {
+
+            setUpdateStatus(
+                `Update complete — ${successfulFiles.length} files updated.`
+            );
+        }
+
+        showLastUpdate();
+        showUpdateLog();
+
+    } catch (error) {
+
+        console.error(
+            "Song2HTML: update failed",
+            error
+        );
+
+        setUpdateStatus(
+            `Update failed: ${error.message}`
+        );
+
+    } finally {
+
+        if (button) {
+            button.disabled = false;
+        }
+    }
+}
+
+
+/*
+ * Send a message to the service worker and wait for its reply.
+ */
+function sendServiceWorkerMessage(serviceWorker, message) {
+
+    return new Promise((resolve, reject) => {
+
+        const channel = new MessageChannel();
+
+        const timeout =
+            setTimeout(() => {
+                reject(
+                    new Error("Service worker update timed out")
+                );
+            }, 60000);
+
+
+        channel.port1.onmessage = event => {
+
+            clearTimeout(timeout);
+
+            const data = event.data;
+
+            if (!data || data.ok !== true) {
+
+                reject(
+                    new Error(
+                        data && data.error
+                            ? data.error
+                            : "Service worker update failed"
+                    )
+                );
+
+                return;
+            }
+
+            resolve(data.results || []);
+        };
+
+
+        serviceWorker.postMessage(
+            message,
+            [channel.port2]
+        );
+    });
+}
+
+
+/*
+ * Build the list of content files that should be cached.
+ */
+async function buildContentFileList() {
+
+    const files = [];
+
+
+    /*
+     * Catalogue.
+     */
+    const catalogueResponse =
+        await fetch(
+            CATALOGUE_FILE,
+            { cache: "no-cache" }
+        );
+
+    if (!catalogueResponse.ok) {
+
+        throw new Error(
+            `Could not load ${CATALOGUE_FILE}: HTTP ${catalogueResponse.status}`
+        );
+    }
+
+
+    const catalogue =
+        await catalogueResponse.json();
+
+
+    if (!Array.isArray(catalogue.songs)) {
+
+        throw new Error(
+            "catalogue.json does not contain a songs array"
+        );
+    }
+
+
+    /*
+     * Add catalogue itself.
+     */
+    files.push(CATALOGUE_FILE);
+
+
+    /*
+     * Add each song's HTML and normal JSON file.
+     */
+    for (const song of catalogue.songs) {
+
+        if (!song.file) {
+            continue;
+        }
+
+        const htmlFile = song.file;
+
+        files.push(htmlFile);
+
+
+        /*
+         * Convert:
+         *
+         * songs/My Song.html
+         *
+         * into:
+         *
+         * songs/My Song.json
+         */
+        const jsonFile =
+            htmlFile.replace(
+                /\.html$/i,
+                ".json"
+            );
+
+        files.push(jsonFile);
+
+
+        /*
+         * Personal member files.
+         *
+         * These are only added if they actually exist.
+         */
+        try {
+
+            const bandResponse =
+                await fetch(
+                    BAND_FILE,
+                    { cache: "no-cache" }
+                );
+
+            if (!bandResponse.ok) {
+                continue;
+            }
+
+            const band =
+                await bandResponse.json();
+
+
+            if (!Array.isArray(band.members)) {
+                continue;
+            }
+
+
+            for (const member of band.members) {
+
+                const baseName =
+                    htmlFile
+                        .replace(/^songs\//, "")
+                        .replace(/\.html$/i, "");
+
+
+                const memberFile =
+                    `songs/${baseName}.${member}.json`;
+
+
+                if (await fileExists(memberFile)) {
+                    files.push(memberFile);
+                }
+            }
+
+        } catch (error) {
+
+            console.warn(
+                "Song2HTML: could not check member files",
+                error
+            );
+        }
+    }
+
+
+    /*
+     * Remove duplicates.
+     */
+    return [...new Set(files)];
+}
+
+
+/*
+ * Check whether a file exists.
+ *
+ * GET is used rather than HEAD because some cheap web
+ * hosts do not handle HEAD reliably.
+ */
+async function fileExists(file) {
+
+    try {
+
+        const response =
+            await fetch(
+                file,
+                {
+                    cache: "no-cache"
+                }
+            );
+
+        return response.ok;
+
+    } catch (error) {
+
+        return false;
+    }
+}
+
+
+/*
+ * Fetch content files.
+ *
+ * The service worker sees these requests and caches
+ * successful responses.
+ */
+async function cacheContentFiles(files) {
+
+    const results = [];
+
+
+    for (const file of files) {
+
+        try {
+
+            const response =
+                await fetch(
+                    file,
+                    { cache: "no-cache" }
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `HTTP ${response.status}`
+                );
+            }
+
+
+            results.push({
+                file,
+                ok: true
+            });
+
+
+        } catch (error) {
+
+            console.warn(
+                "Song2HTML: could not cache",
+                file,
+                error
+            );
+
+
+            results.push({
+                file,
+                ok: false,
+                error: String(error)
+            });
+        }
+    }
+
+
+    return results;
+}
+
+
+/*
+ * Save the update timestamp and the last few files.
+ */
+function recordUpdate(files) {
+
+    const timestamp =
+        new Date().toISOString();
+
+
+    localStorage.setItem(
+        UPDATE_TIME_KEY,
+        timestamp
+    );
+
+
+    /*
+     * Keep only the last three successful files.
+     */
+    const log =
+        files
+            .slice(-UPDATE_LOG_SIZE);
+
+
+    localStorage.setItem(
+        UPDATE_LOG_KEY,
+        JSON.stringify(log)
+    );
+}
+
+
+/*
+ * Display last update time.
+ */
+function showLastUpdate() {
+
+    const element =
+        document.getElementById("last-updated");
+
+    if (!element) {
+        return;
+    }
+
+
+    const timestamp =
+        localStorage.getItem(
+            UPDATE_TIME_KEY
+        );
+
+
+    if (!timestamp) {
+
+        element.textContent = "Never";
+        return;
+    }
+
+
+    const date =
+        new Date(timestamp);
+
+
+    element.textContent =
+        date.toLocaleString();
+}
+
+
+/*
+ * Display the last three updated files.
+ */
+function showUpdateLog() {
+
+    const element =
+        document.getElementById("update-log");
+
+    if (!element) {
+        return;
+    }
+
+
+    let log = [];
+
+
+    try {
+
+        log =
+            JSON.parse(
+                localStorage.getItem(
+                    UPDATE_LOG_KEY
+                ) || "[]"
+            );
+
+    } catch (error) {
+
+        log = [];
+    }
+
+
+    element.innerHTML = "";
+
+
+    for (const file of log) {
+
+        const line =
+            document.createElement("div");
+
+        line.textContent = file;
+
+        element.appendChild(line);
+    }
+}
+
+
+/*
+ * Display update status text.
+ */
+function setUpdateStatus(message) {
+
+    const element =
+        document.getElementById("update-status");
+
+    if (element) {
+        element.textContent = message;
+    }
+}
 
 

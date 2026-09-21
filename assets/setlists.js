@@ -113,7 +113,7 @@ async function initialiseSetlists()
         initialiseSortable();
         updateDuplicateMarkers();
 
-
+        loadSongCount();
    
 /*----------------------------------------------------------*/
 /*    Save current setlist                                  */
@@ -955,3 +955,47 @@ onEnd: function ()
     }
 );
 }
+
+// catalogue song counter
+
+async function loadSongCount() {
+
+    const element =
+        document.getElementById("song-count");
+
+    if (!element) {
+        return;
+    }
+
+    try {
+
+        const response =
+            await fetch(
+                "assets/catalogue.json",
+                { cache: "no-cache" }
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                `HTTP ${response.status}`
+            );
+        }
+
+        const catalogue =
+            await response.json();
+
+        element.textContent =
+            catalogue.song_count ?? catalogue.songs.length;
+
+    } catch (error) {
+
+        console.warn(
+            "Song2HTML: could not load song count",
+            error
+        );
+
+        element.textContent = "?";
+    }
+}
+
+

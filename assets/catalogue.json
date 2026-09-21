@@ -1,13 +1,9 @@
 {
-    "song_count": 22,
+    "song_count": 20,
     "songs": [
         {
             "title": "00-break",
             "file": "songs/00-Break.html"
-        },
-        {
-            "title": "A Fool for Your Stockings",
-            "file": "songs/Fool_for_Your_Stockings.html"
         },
         {
             "title": "After Midnight",
@@ -76,10 +72,6 @@
         {
             "title": "Some Kind Of Wonderful",
             "file": "songs/some-wonderful.html"
-        },
-        {
-            "title": "The Road To Hell",
-            "file": "songs/Road2hell.html"
         },
         {
             "title": "Treat Me So Lowdown",

@@ -125,6 +125,114 @@ async function cacheInstallFiles(progressCallback = null) {
 
 
 /*
+ * Cache content files.
+ *
+ * The file list is supplied by settings.js.
+ *
+ * During installation there is no content update.
+ * During "Update now", progress is reported back
+ * through the supplied callback.
+ */
+
+async function cacheContentFiles(
+    files,
+    progressCallback = null
+) {
+
+    const cache =
+        await caches.open(CACHE_NAME);
+
+    const results = [];
+
+
+    for (let i = 0; i < files.length; i++) {
+
+        const file =
+            files[i];
+
+
+        /*
+         * Tell settings.js what we are about to load.
+         */
+        if (progressCallback) {
+
+            progressCallback({
+
+                phase: "content",
+
+                current: i + 1,
+
+                total: files.length,
+
+                file: file
+
+            });
+        }
+
+
+        try {
+
+            const response =
+                await fetch(
+                    file,
+                    { cache: "no-cache" }
+                );
+
+
+            if (!response.ok) {
+
+                throw new Error(
+                    `HTTP ${response.status}`
+                );
+            }
+
+
+            /*
+             * Explicitly put the file into
+             * the Song2HTML cache.
+             */
+            await cache.put(
+                file,
+                response.clone()
+            );
+
+
+            results.push({
+
+                file: file,
+
+                ok: true
+
+            });
+
+
+        } catch (error) {
+
+            console.warn(
+                "Song2HTML: could not cache content",
+                file,
+                error
+            );
+
+
+            results.push({
+
+                file: file,
+
+                ok: false,
+
+                error: String(error)
+
+            });
+        }
+    }
+
+
+    return results;
+}
+
+
+/*
  * Service worker installation.
  */
 self.addEventListener(
@@ -432,6 +540,108 @@ self.addEventListener(
                     console.error(
                         "Song2HTML: core update failed",
                         error
+                            
+                            );
+                } ) );
+                        
+/*
+ * Settings can send:
+ *
+ *     {
+ *         type: "UPDATE_CONTENT",
+ *         files: [...]
+ *     }
+ *
+ * to download and cache all content files.
+ */
+self.addEventListener(
+    "message",
+    event => {
+
+        if (
+            !event.data ||
+            event.data.type !== "UPDATE_CONTENT"
+        ) {
+            return;
+        }
+
+
+        const files =
+            event.data.files;
+
+
+        if (!Array.isArray(files)) {
+
+            console.error(
+                "Song2HTML: UPDATE_CONTENT requires a files array"
+            );
+
+            return;
+        }
+
+
+        event.waitUntil(
+
+            cacheContentFiles(
+
+                files,
+
+                progress => {
+
+                    /*
+                     * Send progress back to settings.js.
+                     */
+                    if (
+                        event.ports &&
+                        event.ports[0]
+                    ) {
+
+                        event.ports[0].postMessage({
+
+                            type:
+                                "UPDATE_PROGRESS",
+
+                            phase:
+                                progress.phase,
+
+                            current:
+                                progress.current,
+
+                            total:
+                                progress.total,
+
+                            file:
+                                progress.file
+                        });
+                    }
+                }
+            )
+
+                .then(results => {
+
+                    if (
+                        event.ports &&
+                        event.ports[0]
+                    ) {
+
+                        event.ports[0].postMessage({
+
+                            type:
+                                "UPDATE_COMPLETE",
+
+                            ok: true,
+
+                            results:
+                                results
+                        });
+                    }
+                })
+
+                .catch(error => {
+
+                    console.error(
+                        "Song2HTML: content update failed",
+                        error
                     );
 
 
@@ -442,14 +652,18 @@ self.addEventListener(
 
                         event.ports[0].postMessage({
 
-                            type: "UPDATE_COMPLETE",
+                            type:
+                                "UPDATE_COMPLETE",
 
                             ok: false,
 
-                            error: String(error)
+                            error:
+                                String(error)
                         });
                     }
                 })
         );
-    }
-);
+    });
+               } );
+                
+                

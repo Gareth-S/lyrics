@@ -511,10 +511,17 @@ async function updateNow() {
         /*
          * Download/cache the content files.
          */
-        const contentResults =
-            await cacheContentFiles(contentFiles);
+        
+const contentResults =
+    await sendServiceWorkerMessage(
+        registration.active,
+        {
+            type: "UPDATE_CONTENT",
+            files: contentFiles
+        }
+    );
 
-
+    
         /*
          * Combine successful results.
          */

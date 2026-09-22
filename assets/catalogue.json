@@ -1,5 +1,5 @@
 {
-    "song_count": 21,
+    "song_count": 22,
     "songs": [
         {
             "title": "00-break",
@@ -56,6 +56,10 @@
         {
             "title": "Lie To Me",
             "file": "songs/lie2me.html"
+        },
+        {
+            "title": "Little Wing",
+            "file": "songs/Little_Wing_.html"
         },
         {
             "title": "Mystery Dance",

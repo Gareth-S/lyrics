@@ -814,12 +814,24 @@ async function fileExists(file) {
  * The service worker sees these requests and caches
  * successful responses.
  */
+
 async function cacheContentFiles(files) {
 
     const results = [];
 
+    for (let i = 0; i < files.length; i++) {
 
-    for (const file of files) {
+        const file = files[i];
+
+
+        /*
+         * Show content-file progress.
+         */
+        setUpdateStatus(
+            `Song files: ${i + 1} / ${files.length}<br>` +
+            `Loading: ${file}`
+        );
+
 
         try {
 
@@ -829,20 +841,16 @@ async function cacheContentFiles(files) {
                     { cache: "no-cache" }
                 );
 
-
             if (!response.ok) {
-
                 throw new Error(
                     `HTTP ${response.status}`
                 );
             }
 
-
             results.push({
                 file,
                 ok: true
             });
-
 
         } catch (error) {
 
@@ -852,7 +860,6 @@ async function cacheContentFiles(files) {
                 error
             );
 
-
             results.push({
                 file,
                 ok: false,
@@ -860,7 +867,6 @@ async function cacheContentFiles(files) {
             });
         }
     }
-
 
     return results;
 }

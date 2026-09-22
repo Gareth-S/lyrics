@@ -1,21 +1,9 @@
 {
-    "song_count": 21,
+    "song_count": 12,
     "songs": [
         {
             "title": "00-break",
             "file": "songs/00-Break.html"
-        },
-        {
-            "title": "After Midnight",
-            "file": "songs/After_Midnight.html"
-        },
-        {
-            "title": "Before You Accuse Me",
-            "file": "songs/b4accuseme.html"
-        },
-        {
-            "title": "Brown Sugar",
-            "file": "songs/Brown_Sugar.html"
         },
         {
             "title": "Call Me The Breeze",
@@ -26,40 +14,16 @@
             "file": "songs/Crossroads.html"
         },
         {
-            "title": "Dont Let Me Be Misunderstood",
-            "file": "songs/dont_let_me_be_misunderstood.html"
-        },
-        {
-            "title": "Down At The Doctors",
-            "file": "songs/downdoc.html"
-        },
-        {
             "title": "Every Day I Have The Blues",
             "file": "songs/Everyday_Blues.html"
-        },
-        {
-            "title": "Folsom Prison Blues",
-            "file": "songs/Folsom.html"
-        },
-        {
-            "title": "Fools in love",
-            "file": "songs/fools-love.html"
         },
         {
             "title": "Green Onion / Let The Good Times Roll",
             "file": "songs/green_times.html"
         },
         {
-            "title": "Green River",
-            "file": "songs/Green_River.html"
-        },
-        {
             "title": "I Heard It Through The Grapevine",
             "file": "songs/heard_thru_grapevine.html"
-        },
-        {
-            "title": "Lie To Me",
-            "file": "songs/lie2me.html"
         },
         {
             "title": "Riding With The King",

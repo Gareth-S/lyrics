@@ -1,12 +1,12 @@
 {
     "song": {
-        "id": "Little Wing",
-        "title": "Little Wing",
+        "id": "Fools in love",
+        "title": "Fools in love",
         "artist": "",
         "version": "1.0"
     },
     "tempo": {
-        "bpm": 480,
+        "bpm": 138,
         "timeSignature": "4/4",
         "countInBars": 4
     }

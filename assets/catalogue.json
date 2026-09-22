@@ -1,5 +1,5 @@
 {
-    "song_count": 22,
+    "song_count": 21,
     "songs": [
         {
             "title": "00-break",
@@ -42,6 +42,10 @@
             "file": "songs/Folsom.html"
         },
         {
+            "title": "Fools in love",
+            "file": "songs/fools-love.html"
+        },
+        {
             "title": "Green Onion / Let The Good Times Roll",
             "file": "songs/green_times.html"
         },
@@ -56,14 +60,6 @@
         {
             "title": "Lie To Me",
             "file": "songs/lie2me.html"
-        },
-        {
-            "title": "Little Wing",
-            "file": "songs/Little_Wing_.html"
-        },
-        {
-            "title": "Mystery Dance",
-            "file": "songs/Mystery_Dance.html"
         },
         {
             "title": "Riding With The King",

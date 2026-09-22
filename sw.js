@@ -379,15 +379,24 @@ self.addEventListener(
                          *
                          * Look for the clean cached URL instead.
                          */
-                        const isSongHtml =
-                            url.pathname
-                                .toLowerCase()
-                                .startsWith("/songs/") &&
-                            url.pathname
-                                .toLowerCase()
-                                .endsWith(".html");
+const scopePath =
+    new URL(self.registration.scope).pathname;
 
+const relativePath =
+    url.pathname.startsWith(scopePath)
+        ? url.pathname.slice(scopePath.length)
+        : url.pathname;
 
+const isSongHtml =
+    relativePath
+        .toLowerCase()
+        .startsWith("songs/") &&
+    relativePath
+        .toLowerCase()
+        .endsWith(".html");
+        
+        
+        
                         if (isSongHtml) {
 
                             const cleanRequest =

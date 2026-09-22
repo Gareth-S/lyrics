@@ -54,7 +54,7 @@ body {
     font-family: "DejaVu Sans Mono", monospace;
 */
 
-    font-family: "DejaVu Sans Mono";
+    font-family: "SongTestMono";
 
     font-size: calc(1.0rem * var(--scale));
     line-height: 1.4;
@@ -101,7 +101,7 @@ body {
 
 
 .chords {
-    font-family: "DejaVuSansMono", monospace;
+    font-family: "SongTestMono";
     color: var(--chord);
     font-weight: bold;
     font-size: 1.0rem;
@@ -111,7 +111,7 @@ body {
 /* check to make sure it works again */
 
 .accidental {
-    font-family: "DejaVuSansMono", monospace;
+    font-family: "SongTestMono";
     color: var(--chord);
     font-size: 1.5rem;
     font-weight: bold;

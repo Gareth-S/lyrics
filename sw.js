@@ -387,39 +387,36 @@ const relativePath =
         ? url.pathname.slice(scopePath.length)
         : url.pathname;
 
-const isSongHtml =
+        
+ 
+ const isSongHtml =
     relativePath
         .toLowerCase()
         .startsWith("songs/") &&
     relativePath
         .toLowerCase()
         .endsWith(".html");
-        
-        
-        const isCurrentSetlist =
+
+
+const isCurrentSetlist =
     relativePath
         .toLowerCase()
         === "assets/current.setlist.json";
-                        
-        if (isCurrentSetlist) {
 
-    const cleanRequest =
-        new Request(
-            url.origin +
-            url.pathname
-        );
 
-        
-        
-        const isSavedSetlist =
+const isSavedSetlist =
     relativePath
         .toLowerCase()
         .startsWith("setlists/") &&
     relativePath
         .toLowerCase()
         .endsWith(".setlist.json");
-        
-  if (isSavedSetlist) {
+
+
+/*
+ * Look for the clean cached current setlist.
+ */
+if (isCurrentSetlist) {
 
     const cleanRequest =
         new Request(
@@ -433,19 +430,38 @@ const isSongHtml =
         );
 
     if (cleanCachedResponse) {
+
         return cleanCachedResponse;
     }
-}      
-        
+}
+
+
+/*
+ * Look for the clean cached saved setlist.
+ */
+if (isSavedSetlist) {
+
+    const cleanRequest =
+        new Request(
+            url.origin +
+            url.pathname
+        );
+
     const cleanCachedResponse =
         await caches.match(
             cleanRequest
         );
 
     if (cleanCachedResponse) {
+
         return cleanCachedResponse;
     }
-}
+}       
+        
+        
+/*
+ * Existing song handling.
+ */
 
         
                         if (isSongHtml) {

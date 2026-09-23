@@ -400,9 +400,7 @@ const isSongHtml =
     relativePath
         .toLowerCase()
         === "assets/current.setlist.json";
-        
-        
-        
+                        
         if (isCurrentSetlist) {
 
     const cleanRequest =
@@ -411,6 +409,34 @@ const isSongHtml =
             url.pathname
         );
 
+        
+        
+        const isSavedSetlist =
+    relativePath
+        .toLowerCase()
+        .startsWith("setlists/") &&
+    relativePath
+        .toLowerCase()
+        .endsWith(".setlist.json");
+        
+  if (isSavedSetlist) {
+
+    const cleanRequest =
+        new Request(
+            url.origin +
+            url.pathname
+        );
+
+    const cleanCachedResponse =
+        await caches.match(
+            cleanRequest
+        );
+
+    if (cleanCachedResponse) {
+        return cleanCachedResponse;
+    }
+}      
+        
     const cleanCachedResponse =
         await caches.match(
             cleanRequest
@@ -468,7 +494,11 @@ const isSongHtml =
                              * query parameters.
                              */
                             
-                            if (isSongHtml || isCurrentSetlist) {
+                            if (
+                                isSongHtml ||
+                                isCurrentSetlist ||
+                                isSavedSetlist
+                                ) {
                             
 
                                 const cleanRequest =

@@ -1,6 +1,7 @@
 {
     "files": [
         "./assets/DejaVuSansMono.ttf",
+        "./assets/all.setlists.json",
         "./assets/band.json",
         "./assets/beat.js",
         "./assets/catalogue.json",

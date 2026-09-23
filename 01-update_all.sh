@@ -86,6 +86,49 @@ catalogue_file.write_text(
     encoding="utf-8"
 )
 
+
+# ------------------------------------------------------------
+# Build assets/all.setlists.json
+# ------------------------------------------------------------
+
+setlists_dir = root / "setlists"
+
+setlists = []
+
+if setlists_dir.exists():
+
+    for filename in sorted(
+        setlists_dir.glob("*.setlist.json")
+    ):
+
+        setlists.append(
+            filename.name
+        )
+
+all_setlists = {
+    "setlists": setlists
+}
+
+all_setlists_file = (
+    assets_dir /
+    "all.setlists.json"
+)
+
+all_setlists_file.write_text(
+    json.dumps(
+        all_setlists,
+        indent=4,
+        ensure_ascii=False
+    ) + "\n",
+    encoding="utf-8"
+)
+
+print(
+    f"Created {all_setlists_file} "
+    f"with {len(setlists)} setlists."
+)
+
+
 # ------------------------------------------------------------
 # Build assets/update.json
 # ------------------------------------------------------------

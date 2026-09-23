@@ -396,6 +396,31 @@ const isSongHtml =
         .endsWith(".html");
         
         
+        const isCurrentSetlist =
+    relativePath
+        .toLowerCase()
+        === "assets/current.setlist.json";
+        
+        
+        
+        if (isCurrentSetlist) {
+
+    const cleanRequest =
+        new Request(
+            url.origin +
+            url.pathname
+        );
+
+    const cleanCachedResponse =
+        await caches.match(
+            cleanRequest
+        );
+
+    if (cleanCachedResponse) {
+        return cleanCachedResponse;
+    }
+}
+
         
                         if (isSongHtml) {
 
@@ -442,7 +467,9 @@ const isSongHtml =
                              * Store song HTML without
                              * query parameters.
                              */
-                            if (isSongHtml) {
+                            
+                            if (isSongHtml || isCurrentSetlist) {
+                            
 
                                 const cleanRequest =
                                     new Request(

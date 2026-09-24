@@ -1,8 +1,6 @@
 {
     "setlists": [
-        "Fishermans.setlist.json",
         "Wednesday-Jam.setlist.json",
-        "test.setlist.json",
-        "test2.setlist.json"
+        "test.setlist.json"
     ]
 }

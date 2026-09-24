@@ -618,7 +618,7 @@ function sendServiceWorkerMessage(serviceWorker, message) {
             if (data && data.type === "UPDATE_PROGRESS") {
 
                 setUpdateStatus(
-                    `Application files: ${data.current} / ${data.total}<br>` +
+                    `Application files: ${data.current} / ${data.total}` +
                     `Loading: ${data.file}`
                 );
 
@@ -780,6 +780,35 @@ async function buildContentFileList() {
         }
     }
 
+        /*
+     * Load saved setlist list.
+     */
+    const setlistsResponse =
+        await fetch(
+            "assets/all.setlists.json",
+            { cache: "no-cache" }
+        );
+
+    if (!setlistsResponse.ok) {
+        throw new Error(
+            "Could not load assets/all.setlists.json"
+        );
+    }
+
+    const setlists =
+        await setlistsResponse.json();
+
+    if (Array.isArray(setlists.setlists)) {
+
+        for (const filename of setlists.setlists) {
+
+            files.push(
+                `setlists/${filename}`
+            );
+        }
+    }
+    
+    
 
     /*
      * Remove duplicates.
@@ -835,7 +864,7 @@ async function cacheContentFiles(files) {
          * Show content-file progress.
          */
         setUpdateStatus(
-            `Song files: ${i + 1} / ${files.length}<br>` +
+            `Song files: ${i + 1} / ${files.length}` +
             `Loading: ${file}`
         );
 

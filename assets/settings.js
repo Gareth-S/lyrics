@@ -618,7 +618,7 @@ function sendServiceWorkerMessage(serviceWorker, message) {
             if (data && data.type === "UPDATE_PROGRESS") {
 
                 setUpdateStatus(
-                    `Application files: ${data.current} / ${data.total}` +
+                    `Application files: ${data.current} / ${data.total}`  +
                     `Loading: ${data.file}`
                 );
 

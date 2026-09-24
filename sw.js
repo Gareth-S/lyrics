@@ -403,6 +403,12 @@ const isCurrentSetlist =
         .toLowerCase()
         === "assets/current.setlist.json";
 
+        
+const isAllSetlists =
+    relativePath
+        .toLowerCase()
+        === "assets/all.setlists.json";
+        
 
 const isSavedSetlist =
     relativePath
@@ -417,6 +423,26 @@ const isSavedSetlist =
  * Look for the clean cached current setlist.
  */
 if (isCurrentSetlist) {
+
+    const cleanRequest =
+        new Request(
+            url.origin +
+            url.pathname
+        );
+
+    const cleanCachedResponse =
+        await caches.match(
+            cleanRequest
+        );
+
+    if (cleanCachedResponse) {
+
+        return cleanCachedResponse;
+    }
+}
+
+
+if (isAllSetlists) {
 
     const cleanRequest =
         new Request(

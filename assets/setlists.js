@@ -542,6 +542,114 @@ const deleteButton =
 
         container.appendChild(entry);
     }
+    
+        updateBreakLabels();
+
+}
+
+
+function updateBreakLabels()
+{
+    const container =
+        document.getElementById(
+            "current-setlist"
+        );
+
+    if (!container)
+    {
+        return;
+    }
+
+    const entries =
+        Array.from(
+            container.querySelectorAll(
+                ".song-list-entry"
+            )
+        );
+
+    let setNumber = 0;
+
+    for (let i = 0; i < entries.length; i++)
+    {
+        const entry =
+            entries[i];
+
+        const link =
+            entry.querySelector("a");
+
+        if (!link)
+        {
+            continue;
+        }
+
+        const filename =
+            cleanSongPath(
+                link.getAttribute("href")
+            )
+                .toLowerCase();
+
+        const isBreak =
+            filename ===
+            "songs/00-break.html";
+
+        if (!isBreak)
+        {
+            continue;
+        }
+
+        setNumber++;
+
+        let nextBreakIndex =
+            entries.length;
+
+        for (
+            let j = i + 1;
+            j < entries.length;
+            j++
+        )
+        {
+            const nextLink =
+                entries[j].querySelector("a");
+
+            if (!nextLink)
+            {
+                continue;
+            }
+
+            const nextFilename =
+                cleanSongPath(
+                    nextLink.getAttribute("href")
+                )
+                    .toLowerCase();
+
+            if (
+                nextFilename ===
+                "songs/00-break.html"
+            )
+            {
+                nextBreakIndex = j;
+                break;
+            }
+        }
+
+        if (nextBreakIndex === entries.length)
+        {
+            link.textContent =
+                "End";
+        }
+        else
+        {
+            const songCount =
+                nextBreakIndex - i - 1;
+
+            link.textContent =
+                "Set " +
+                setNumber +
+                " | " +
+                songCount +
+                " songs";
+        }
+    }
 }
 
 function createDeleteButton(entry)
@@ -569,6 +677,8 @@ function createDeleteButton(entry)
              * removing the song.
              */
             updateDuplicateMarkers();
+            updateBreakLabels();
+            
         }
     );
 
@@ -931,7 +1041,7 @@ new Sortable(
              * the new song has just been added.
              */
             updateDuplicateMarkers();
-            
+            updateBreakLabels();
             
             
             
@@ -948,6 +1058,7 @@ onEnd: function ()
 {
     updateSetlistLinks();
     updateDuplicateMarkers();
+    updateBreakLabels();
 }
 
 

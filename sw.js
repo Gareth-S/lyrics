@@ -651,6 +651,8 @@ self.addEventListener(
                             
                             );
                 } ) );
+            }
+);
                         
 /*
  * Settings can send:
@@ -772,6 +774,6 @@ self.addEventListener(
                 })
         );
     });
-               } );
+               
                 
                 

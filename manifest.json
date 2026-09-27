@@ -3,6 +3,7 @@
     "name": "HhH Stomp Lyrics Engine",
     "short_name": "HhH Lyrics",
     "start_url": "./index.html",
+    "scope": "./",
     "display": "standalone",
     "background_color": "#111111",
     "theme_color": "#111111",

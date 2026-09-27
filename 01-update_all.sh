@@ -145,7 +145,12 @@ print(
 # update.json is added explicitly after the scan.
 
 ignored_dirs = {".git", "songs", "setlists"}
-ignored_files = {"update_all.sh"}
+ignored_files = {
+    "update_all.sh",
+    "save-notes.php",
+    "save-scroll-speed.php",
+    "save-setlist.php"
+}
 ignored_suffixes = {".old", ".bak", ".tmp", ".sh", ".txt"}
 
 files = []

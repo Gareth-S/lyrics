@@ -1785,8 +1785,11 @@ function initialiseNotesEditor()
                 {
                     closeNotesEditor();
                 }
+                
+            window.location.reload();
 
             }
+                
                 
                 catch (error)
                 {

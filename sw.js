@@ -125,6 +125,84 @@ async function cacheInstallFiles(progressCallback = null) {
 
 
 /*
+ * Fetch from the network first.
+ *
+ * If the network does not respond within
+ * the timeout, use the cached response.
+ */
+async function networkFirst(
+    request,
+    cacheRequest = request,
+    timeout = 4000
+) {
+
+    const controller =
+        new AbortController();
+
+    const timer =
+        setTimeout(
+            () => {
+                controller.abort();
+            },
+            timeout
+        );
+
+
+    try {
+
+        const response =
+            await fetch(
+                request,
+                {
+                    signal:
+                        controller.signal
+                }
+            );
+
+
+        if (response.ok) {
+
+            const cache =
+                await caches.open(
+                    CACHE_NAME
+                );
+
+            await cache.put(
+                cacheRequest,
+                response.clone()
+            );
+        }
+
+
+        return response;
+
+
+    } catch (error) {
+
+        const cachedResponse =
+            await caches.match(
+                cacheRequest
+            );
+
+
+        if (cachedResponse) {
+
+            return cachedResponse;
+        }
+
+
+        throw error;
+
+
+    } finally {
+
+        clearTimeout(timer);
+    }
+}
+
+
+
+/*
  * Cache content files.
  *
  * The file list is supplied by settings.js.
@@ -311,6 +389,14 @@ self.addEventListener(
 self.addEventListener(
     "fetch",
     event => {
+        
+/*        
+        console.log(
+    "SW FETCH:",
+    event.request.url,
+    event.request.cache
+            );       
+*/
 
         const request =
             event.request;
@@ -352,6 +438,118 @@ self.addEventListener(
         }
 
 
+
+        const scopePath =
+            new URL(
+                self.registration.scope
+            ).pathname;
+
+        const relativePath =
+            url.pathname.startsWith(scopePath)
+                ? url.pathname.slice(
+                    scopePath.length
+                )
+                : url.pathname;
+
+
+        const isCurrentSetlist =
+            relativePath
+                .toLowerCase()
+                === "assets/current.setlist.json";
+                
+                
+
+const isUserData =
+    url.searchParams.has("user-data") &&
+    relativePath
+        .toLowerCase()
+        .startsWith("songs/") &&
+    relativePath
+        .toLowerCase()
+        .endsWith(".json");
+        
+        
+        
+          const isSongHtml =
+    relativePath
+        .toLowerCase()
+        .startsWith("songs/") &&
+    relativePath
+        .toLowerCase()
+        .endsWith(".html");
+
+
+const isAllSetlists =
+    relativePath
+        .toLowerCase()
+        === "assets/all.setlists.json";
+
+
+const isSavedSetlist =
+    relativePath
+        .toLowerCase()
+        .startsWith("setlists/") &&
+    relativePath
+        .toLowerCase()
+        .endsWith(".setlist.json");
+        
+
+        /*
+         * Current setlist:
+         * network first, cached fallback.
+         */
+        if (isCurrentSetlist) {
+
+            const cleanRequest =
+                new Request(
+                    url.origin +
+                    url.pathname
+                );
+
+            event.respondWith(
+                networkFirst(
+                    request,
+                    cleanRequest
+                )
+            );
+
+            return;
+        }
+
+
+        /*
+         * User JSON:
+         * network first, cached fallback.
+         */
+        if (isUserData) {
+            
+
+/*            
+                console.log(
+        "SW USER DATA:",
+        url.pathname,
+        "cache mode:",
+        request.cache
+    );
+
+*/
+            const cleanRequest =
+                new Request(
+                    url.origin +
+                    url.pathname
+                );
+
+            event.respondWith(
+                networkFirst(
+                    request,
+                    cleanRequest
+                )
+            );
+
+            return;
+        }
+
+
         event.respondWith(
 
             caches.match(request)
@@ -368,80 +566,7 @@ self.addEventListener(
                         }
 
 
-                        /*
-                         * Song HTML may have query parameters:
-                         *
-                         * songs/Crossroads.html?source=catalogue&index=6
-                         *
-                         * or:
-                         *
-                         * songs/Crossroads.html?source=setlist&index=3
-                         *
-                         * Look for the clean cached URL instead.
-                         */
-const scopePath =
-    new URL(self.registration.scope).pathname;
-
-const relativePath =
-    url.pathname.startsWith(scopePath)
-        ? url.pathname.slice(scopePath.length)
-        : url.pathname;
-
-        
- 
- const isSongHtml =
-    relativePath
-        .toLowerCase()
-        .startsWith("songs/") &&
-    relativePath
-        .toLowerCase()
-        .endsWith(".html");
-
-
-const isCurrentSetlist =
-    relativePath
-        .toLowerCase()
-        === "assets/current.setlist.json";
-
-        
-const isAllSetlists =
-    relativePath
-        .toLowerCase()
-        === "assets/all.setlists.json";
-        
-
-const isSavedSetlist =
-    relativePath
-        .toLowerCase()
-        .startsWith("setlists/") &&
-    relativePath
-        .toLowerCase()
-        .endsWith(".setlist.json");
-
-
-/*
- * Look for the clean cached current setlist.
- */
-if (isCurrentSetlist) {
-
-    const cleanRequest =
-        new Request(
-            url.origin +
-            url.pathname
-        );
-
-    const cleanCachedResponse =
-        await caches.match(
-            cleanRequest
-        );
-
-    if (cleanCachedResponse) {
-
-        return cleanCachedResponse;
-    }
-}
-
-
+                        
 if (isAllSetlists) {
 
     const cleanRequest =

@@ -1363,15 +1363,21 @@ async function loadBandNotes()
             const filename =
                 currentSongName() + ".json";
 
-            const response =
-                await fetch(filename);
+const response =
+    await fetch(
+        filename,
+        {
+            cache: "no-cache"
+        }
+    );
+
     
  //       const response =
  //           await fetch("tiny.json");
 
         if (!response.ok)
         {
-            console.log("json not found");
+ //           console.log("json not found");
             return;
         }
 
@@ -1441,10 +1447,15 @@ async function loadUserNotes()
         console.log(filename);
 
         try
+        
         {
             const response =
-                await fetch(filename);
+    await fetch(
+        filename +
+        "?user-data=1"
+    );
 
+                
             if (!response.ok)
             {
                 console.log(filename + " not found" );

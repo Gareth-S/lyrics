@@ -265,6 +265,28 @@ if (autoScrollSave)
                     "Scroll speed saved:",
                     scrollSpeed
                 );
+                
+                const saved =
+    document.getElementById(
+        "scroll-speed-saved"
+    );
+
+if (saved)
+{
+    saved.style.display =
+        "block";
+
+    setTimeout(
+        function ()
+        {
+            saved.style.display =
+                "none";
+        },
+        2000
+    );
+}
+                
+                
             }
             catch (error)
             {
@@ -273,7 +295,8 @@ if (autoScrollSave)
         }
     );
 }    
-        
+       
+       
     }
 );
 

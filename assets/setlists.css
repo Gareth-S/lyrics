@@ -240,4 +240,48 @@
     text-decoration: underline;
 }
 
+/*
+ * Setlist action buttons.
+ *
+ * Save Setlist is primarily a bandleader function,
+ * so keep it visually subdued.
+ */
 
+.bandleader-button
+{
+    opacity: 0.55;
+}
+
+.song-list-buttons
+{
+    margin-top: 1.5rem;
+
+    padding: 0.8rem;
+
+    background: rgba(118, 118, 118, 0.28);
+
+    border-radius: 0.4rem;
+}
+
+
+#setlist-controls
+{
+    margin-top: 1rem;
+}
+
+#setlist-controls-toggle
+{
+    display: block;
+    margin: 0 auto;
+}
+
+.song-list-buttons
+{
+    margin-top: 0.5rem;
+
+    padding: 0.8rem;
+
+    background: rgba(128, 128, 128, 0.08);
+
+    border-radius: 0.4rem;
+}

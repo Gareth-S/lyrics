@@ -91,6 +91,10 @@ function populateCatalogue(songs)
             }
 }
         
+
+   let currentSetlistName =
+    "Current setlist";     
+        
         
 document.addEventListener(
     "DOMContentLoaded",
@@ -114,6 +118,8 @@ async function initialiseSetlists()
         updateDuplicateMarkers();
 
         loadSongCount();
+        
+        loadBandleader();
    
 /*----------------------------------------------------------*/
 /*    Save current setlist                                  */
@@ -198,7 +204,8 @@ document
                         "Save failed"
                     );
                 }
-
+                
+        currentSetlistName = name;
 
                 console.log(
                     "Setlist saved:",
@@ -220,6 +227,94 @@ document
     );
     
     
+/*----------------------------------------------------------*/
+/*    Share current setlist                                 */
+/*----------------------------------------------------------*/
+
+document
+    .getElementById("share-setlist")
+    .addEventListener(
+        "click",
+        async function ()
+        {
+            try
+            {
+                const text =
+                    await buildSetlistText();
+
+                if (!navigator.share)
+                {
+                    alert(
+                        "Sharing is not available on this device."
+                    );
+
+                    return;
+                }
+
+                await navigator.share(
+                    {
+                        title:
+                            currentSetlistName,
+
+                        text:
+                            text
+                    }
+                );
+            }
+            catch (error)
+            {
+                if (
+                    error.name !==
+                    "AbortError"
+                )
+                {
+                    console.error(
+                        "Unable to share setlist:",
+                        error
+                    );
+                }
+            }
+        }
+    );
+    
+/*----------------------------------------------------------*/
+/*    Copy current setlist to clipboard                    */
+/*----------------------------------------------------------
+
+document
+    .getElementById("save2clip")
+    .addEventListener(
+        "click",
+        async function ()
+        {
+            try
+            {
+                const text =
+                    await buildSetlistText();
+
+                await navigator.clipboard.writeText(
+                    text
+                );
+
+                console.log(
+                    "Setlist copied to clipboard."
+                );
+            }
+            catch (error)
+            {
+                console.error(
+                    "Unable to copy setlist:",
+                    error
+                );
+
+                alert(
+                    "Unable to copy setlist."
+                );
+            }
+        }
+    ); 
+    
+*/    
     
 }    
     
@@ -403,12 +498,18 @@ async function loadSavedSetlist(filename)
             );
         }
 
-        const data =
-            await response.json();
+const data =
+    await response.json();
 
-        populateSetlist(
-            data.songs
-        );
+currentSetlistName =
+    filename.replace(
+        /\.setlist\.json$/i,
+        ""
+    );
+
+populateSetlist(
+    data.songs
+);
 
         saveTemporarySetlist(data.songs);
         
@@ -894,6 +995,198 @@ function saveTemporarySetlist(songs)
     );
 }
 
+
+/*----------------------------------------------------------*/
+/*    Build shareable setlist text                          */
+/*----------------------------------------------------------*/
+
+async function buildSetlistText()
+{
+    const bandResponse =
+        await fetch(
+            "assets/band.json?ts=" +
+            Date.now()
+        );
+        
+        
+        
+
+    if (!bandResponse.ok)
+    {
+        throw new Error(
+            "Could not load band.json"
+        );
+    }
+
+    const band =
+        await bandResponse.json();
+
+    const lines = [];
+
+    /*
+     * Band name.
+     *
+     * Asterisks make this bold when pasted into
+     * WhatsApp.
+     */
+lines.push(
+    "*" +
+    band.band +
+    "*"
+);
+
+lines.push("");
+
+lines.push(
+    currentSetlistName
+);
+
+lines.push("");
+
+const now =
+    new Date();
+
+const day =
+    String(
+        now.getDate()
+    ).padStart(
+        2,
+        "0"
+    );
+
+const month =
+    String(
+        now.getMonth() + 1
+    ).padStart(
+        2,
+        "0"
+    );
+
+const year =
+    now.getFullYear();
+
+const hours =
+    String(
+        now.getHours()
+    ).padStart(
+        2,
+        "0"
+    );
+
+const minutes =
+    String(
+        now.getMinutes()
+    ).padStart(
+        2,
+        "0"
+    );
+
+
+lines.push(
+    "_Created @ " +
+    day +
+    "/" +
+    month +
+    "/" +
+    year +
+    " " +
+    hours +
+    ":" +
+    minutes +
+    "_"
+);
+
+lines.push("");
+    const container =
+        document.getElementById(
+            "current-setlist"
+        );
+
+    if (!container)
+    {
+        return lines.join("\n");
+    }
+
+    const entries =
+        container.querySelectorAll(
+            ".song-list-entry"
+        );
+
+    for (const entry of entries)
+    {
+        const link =
+            entry.querySelector("a");
+
+        if (!link)
+        {
+            continue;
+        }
+
+        const filename =
+            cleanSongPath(
+                link.getAttribute("href")
+            )
+                .toLowerCase();
+
+        /*
+         * Break entries already contain their
+         * display text:
+         *
+         * Set 1 | 8 songs
+         * Set 2 | 5 songs
+         * End
+         */
+if (
+    filename ===
+    "songs/00-break.html"
+)
+{
+    /*
+     * Blank line before the set heading,
+     * unless this is the first entry.
+     */
+    if (lines.length > 0)
+    {
+        lines.push("");
+    }
+
+    const breakText =
+        link.textContent.trim();
+
+    lines.push(
+        breakText
+    );
+
+    /*
+     * Underline the set heading.
+     */
+    lines.push(
+        "─".repeat(
+            breakText.length
+        )
+    );
+
+    lines.push("");
+
+    continue;
+}
+
+/*
+ * Normal song.
+ *
+ * Indent slightly for readability.
+ */
+lines.push(
+    "  " +
+    link.textContent.trim()
+);
+        
+    }
+
+    return lines.join("\n");
+}
+
+
 /*
  * Rebuild navigation URLs for every song in the current setlist.
  *
@@ -1110,3 +1403,128 @@ async function loadSongCount() {
 }
 
 
+// call band leader
+
+async function loadBandleader()
+{
+    try
+    {
+        const response =
+            await fetch(
+                "assets/band.json?ts=" +
+                Date.now()
+            );
+            
+            
+            
+            
+
+        if (!response.ok)
+        {
+            throw new Error(
+                "Could not load band.json"
+            );
+        }
+
+        const band =
+            await response.json();
+
+        const element =
+            document.getElementById(
+                "bandleader"
+            );
+            
+            
+            const controls =
+    document.getElementById(
+        "setlist-controls"
+    );
+
+const toggle =
+    document.getElementById(
+        "setlist-controls-toggle"
+    );
+
+const buttons =
+    controls
+        ? controls.querySelector(
+            ".song-list-buttons"
+        )
+        : null;
+
+const currentUser =
+    localStorage.getItem(
+        "current-user"
+    );
+
+if (
+    controls &&
+    toggle &&
+    buttons
+)
+{
+    const isBandleader =
+        currentUser ===
+        band.bandleader;
+
+    if (isBandleader)
+    {
+        buttons.style.display =
+            "block";
+
+        toggle.textContent =
+            "▼";
+    }
+    else
+    {
+        buttons.style.display =
+            "none";
+
+        toggle.textContent =
+            "▶";
+    }
+
+    toggle.addEventListener(
+        "click",
+        function ()
+        {
+            if (
+                buttons.style.display ===
+                "none"
+            )
+            {
+                buttons.style.display =
+                    "block";
+
+                toggle.textContent =
+                    "▼";
+            }
+            else
+            {
+                buttons.style.display =
+                    "none";
+
+                toggle.textContent =
+                    "▶";
+            }
+        }
+    );
+}
+            
+            
+            
+
+        if (element)
+        {
+            element.textContent =
+                band.bandleader || "";
+        }
+    }
+    catch (error)
+    {
+        console.error(
+            "Unable to load bandleader:",
+            error
+        );
+    }
+}

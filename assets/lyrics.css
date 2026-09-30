@@ -1277,3 +1277,14 @@ body
 
     text-align: center;
 }
+
+.power-symbol {
+    width: 1em;
+    height: 1em;
+    vertical-align: -0.15em;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+

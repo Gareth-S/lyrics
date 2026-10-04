@@ -1,7 +1,7 @@
 {
     "id": "/hhh-test02/",
-    "name": "HhH Stomp Lyrics Engine",
-    "short_name": "HhH Lyrics",
+    "name": "HhH Stomp TEST Lyrics Engine",
+    "short_name": "HhH TEST",
     "start_url": "./index.html",
     "scope": "./",
     "display": "standalone",

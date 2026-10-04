@@ -230,9 +230,12 @@ body {
 
 
 .light-theme {
+    
+    text-shadow: none;
+    font-weight: bold;
 
     --bg:            #f6f3e8;
-    --text:          #404040;
+    --text:          #303030;
 
     --section:       #7a6425;
     --chord:         #2d5f2d;

@@ -772,7 +772,7 @@ async function buildContentFileList() {
         for (const member of members) {
 
             const memberFile =
-                `songs/${baseName}.${member}.json`;
+                `songs/${baseName}.${member.toLowerCase()}.json`;
 
             if (await fileExists(memberFile)) {
                 files.push(memberFile);

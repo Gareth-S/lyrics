@@ -615,27 +615,59 @@ if (isSavedSetlist) {
  */
 
         
-                        if (isSongHtml) {
+if (isSongHtml) {
 
-                            const cleanRequest =
-                                new Request(
-                                    url.origin +
-                                    url.pathname
-                                );
-
-
-                            const cleanCachedResponse =
-                                await caches.match(
-                                    cleanRequest
-                                );
+    const cleanRequest =
+        new Request(
+            url.origin +
+            url.pathname
+        );
 
 
-                            if (cleanCachedResponse) {
+    const cleanCachedResponse =
+        await caches.match(
+            cleanRequest
+        );
 
-                                return cleanCachedResponse;
-                            }
-                        }
 
+    if (cleanCachedResponse) {
+
+        /*
+         * Return the cached song immediately.
+         */
+        const refreshSong =
+            fetch(request)
+
+                .then(response => {
+
+                    if (!response.ok) {
+                        return;
+                    }
+
+                    return caches.open(CACHE_NAME)
+
+                        .then(cache => {
+
+                            return cache.put(
+                                cleanRequest,
+                                response
+                            );
+                        });
+                })
+
+                .catch(() => {
+                    /*
+                     * Network unavailable.
+                     * Keep existing cache.
+                     */
+                });
+
+
+        event.waitUntil(refreshSong);
+
+        return cleanCachedResponse;
+    }
+}
 
                         /*
                          * Nothing cached.

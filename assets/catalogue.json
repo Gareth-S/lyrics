@@ -1,5 +1,5 @@
 {
-    "song_count": 12,
+    "song_count": 13,
     "songs": [
         {
             "title": "00-break",
@@ -32,6 +32,10 @@
         {
             "title": "Riot In Cell Block Number Nine",
             "file": "songs/Riot_cell9.html"
+        },
+        {
+            "title": "Riot In Cell Block Number Nine / Jailhouse Rock",
+            "file": "songs/Riot9_jailhouse.html"
         },
         {
             "title": "Roll Over Beethoven",

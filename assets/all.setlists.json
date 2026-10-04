@@ -1,6 +1,7 @@
 {
     "setlists": [
-        "Wednesday-Jam.setlist.json",
+        "Jam.setlist.json",
+        "test-two.setlist.json",
         "test.setlist.json"
     ]
 }

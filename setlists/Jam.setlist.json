@@ -1,12 +1,12 @@
 {
     "songs": [
         {
-            "title": "00 Break",
+            "title": "Set 1 | 8 songs",
             "file": "songs/00-Break.html?source=setlist&index=0"
         },
         {
-            "title": "Every Day I Have The Blues",
-            "file": "songs/Everyday_Blues.html?source=setlist&index=1"
+            "title": "Crossroads",
+            "file": "songs/Crossroads.html?source=setlist&index=1"
         },
         {
             "title": "Green Onion / Let The Good Times Roll",
@@ -17,8 +17,8 @@
             "file": "songs/riding_king.html?source=setlist&index=3"
         },
         {
-            "title": "Crossroads",
-            "file": "songs/Crossroads.html?source=setlist&index=4"
+            "title": "Every Day I Have The Blues",
+            "file": "songs/Everyday_Blues.html?source=setlist&index=4"
         },
         {
             "title": "You Never Can Tell",
@@ -37,7 +37,7 @@
             "file": "songs/Riot_cell9.html?source=setlist&index=8"
         },
         {
-            "title": "00 Break",
+            "title": "Set 2 | 3 songs",
             "file": "songs/00-Break.html?source=setlist&index=9"
         },
         {
@@ -53,7 +53,7 @@
             "file": "songs/Call_Me_The_Breeze.html?source=setlist&index=12"
         },
         {
-            "title": "00 Break",
+            "title": "End",
             "file": "songs/00-Break.html?source=setlist&index=13"
         }
     ]

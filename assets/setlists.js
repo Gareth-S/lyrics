@@ -378,8 +378,8 @@ async function loadSavedSetlists()
     {
         const response =
             await fetch(
-                "assets/all.setlists.json?ts=" +
-//                "assets/list.setlists.php?ts=" +
+//                "assets/all.setlists.json?ts=" +
+                "assets/list-setlists.php?ts=" +
                 Date.now()
             );
 
@@ -392,8 +392,16 @@ async function loadSavedSetlists()
 
         const data =
             await response.json();
+ /*           
+         console.log(
+    "list-setlists.php response:",
+    text
+);
+
+*/
 
         populateSavedSetlists(
+//              phpData.setlists  
             data.setlists
         );
         

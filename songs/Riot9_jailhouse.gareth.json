@@ -10,10 +10,6 @@
             "come in on Da Dum"
         ]
     },
-    "inline": {
-        "line-2": [
-            "Test"
-        ]
-    },
-    "scrollSpeed": 22
+    "inline": [],
+    "scrollSpeed": 20
 }

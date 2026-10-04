@@ -5,7 +5,11 @@
     "sections": {
         "section-1": [
             "Test"
+        ],
+        "section-3": [
+            "Test2"
         ]
     },
-    "inline": []
+    "inline": [],
+    "scrollSpeed": 24
 }

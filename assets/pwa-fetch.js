@@ -5,10 +5,20 @@ self.addEventListener('fetch', (event) => {
 
   // Target only JSON requests
   if (requestUrl.pathname.endsWith('.json')) {
-    
+
+/*      
     // STEP 1: Localhost 1st
     // If the request is originating from or pointing to a local dev environment
     if (requestUrl.hostname === 'localhost' || requestUrl.hostname === '127.0.0.1') {
+      event.respondWith(
+        fetch(event.request).catch(() => caches.match(event.request))
+      );
+      return; 
+*/
+
+    // STEP 1: network 1st
+    // If the request is originating from or pointing to a local dev environment
+    if (requestUrl.hostname === 'digit.hopto.org' || requestUrl.hostname === 'localhost') {
       event.respondWith(
         fetch(event.request).catch(() => caches.match(event.request))
       );

@@ -1,10 +1,12 @@
 {
     "user": "Gareth",
     "filename": "Everyday_Blues",
-    "songNotes": [
-        "I start"
-    ],
+    "songNotes": [],
     "sections": [],
-    "inline": [],
-    "scrollSpeed": 26
+    "inline": {
+        "line-5": [
+            "Still nope"
+        ]
+    },
+    "scrollSpeed": 20
 }

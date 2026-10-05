@@ -288,6 +288,25 @@ body {
     --accent-colour: #d9be55;
 }
 
+#menu-button {
+    font-size: 2.0rem;
+    text-decoration: none;  
+    padding: 4px 8px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    background: var(--button-background);
+    box-shadow:
+        inset 0 1px 2px rgba(255, 255, 255, 0.65),
+        0 1px 2px rgba(0, 0, 0, 0.25);
+    cursor: pointer;
+}
+#menu-button:active {
+    box-shadow:
+        inset 0 1px 3px rgba(0, 0, 0, 0.3);
+    transform: translateY(1px);
+}
+
+
 
 /*----------------------------------------------------------*/
 /* Beat Engine Colours                                       */
@@ -415,28 +434,27 @@ header {
     font-weight: bold;
 }
 
-#menu-button,
-#prev-song,
-#next-song {
+/* #menu-button, */
 
-    font-size: 2.0rem;
-    padding: 0.5em 1em;
+.prev-song,
+.next-song {
+
+    font-size: 2.5rem;
     
-/*    text-decoration: none;  
-      */
+    padding: 2px 2px;
+    
+    text-decoration: none;       
 
     box-shadow:
-      inset 0 1.5px 0.2px rgba(0,0,0,.45);
-
-
+      inset 0 1.5px 0.2px rgba(0,0,0,.65);
 
 }
 
-#prev-song {
-    margin-left: 0.6em;
+.prev-song {
+    margin-right: 0.6em;
 }
 
-#next-song {
+.next-song {
     margin-left: 0.6em;
 }
 
@@ -469,17 +487,16 @@ header {
 
 }
 
-#prev-song-footer,
-#next-song-footer {
+.prev-song-footer,
+.next-song-footer {
 
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    min-width: 3em;
     min-height: 2.5em;
-    padding: 0.3em 0.6em;
+    padding: 2px 2px;
 
-    font-size: 3.0rem;
+    font-size: 2.5rem;
     text-decoration: none;
 
 }

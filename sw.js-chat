@@ -2,38 +2,6 @@ const CACHE_NAME = "hhh-stomp-v1.2";
 const UPDATE_FILE = "./assets/update.json";
 
 
-function cleanRequestFor(url) {
-
-    return new Request(
-        url.origin + url.pathname
-    );
-}
-
-
-/*
- * User JSON must never share a cache key with song.json.
- *
- * songs/foo.user.json  →  /songs/foo.user.json
- * songs/foo.json?user-data  →  /songs/foo.json?user-data
- */
-function userCacheRequestFor(url, relativePath) {
-
-    const lowerPath =
-        relativePath.toLowerCase();
-
-
-    if (lowerPath.endsWith(".user.json")) {
-
-        return cleanRequestFor(url);
-    }
-
-
-    return new Request(
-        url.origin + url.pathname + "?user-data"
-    );
-}
-
-
 /*
  * Get the list of application/install files.
  */
@@ -156,20 +124,11 @@ async function cacheInstallFiles(progressCallback = null) {
 }
 
 
-async function matchCached(cacheRequest) {
-
-    return caches.match(cacheRequest);
-}
-
-
 /*
  * Fetch from the network first.
  *
  * If the network does not respond within
  * the timeout, use the cached response.
- *
- * cache: "no-cache" bypasses the HTTP cache
- * so a "network" hit is actually fresh.
  */
 async function networkFirst(
     request,
@@ -196,9 +155,7 @@ async function networkFirst(
                 request,
                 {
                     signal:
-                        controller.signal,
-                    cache:
-                        "no-cache"
+                        controller.signal
                 }
             );
 
@@ -214,24 +171,6 @@ async function networkFirst(
                 cacheRequest,
                 response.clone()
             );
-
-            return response;
-        }
-
-
-        /*
-         * Server error: prefer a good cached
-         * copy over a failing live response.
-         */
-        if (response.status >= 500) {
-
-            const cachedResponse =
-                await matchCached(cacheRequest);
-
-            if (cachedResponse) {
-
-                return cachedResponse;
-            }
         }
 
 
@@ -241,7 +180,9 @@ async function networkFirst(
     } catch (error) {
 
         const cachedResponse =
-            await matchCached(cacheRequest);
+            await caches.match(
+                cacheRequest
+            );
 
 
         if (cachedResponse) {
@@ -259,88 +200,6 @@ async function networkFirst(
     }
 }
 
-
-/*
- * Cache first. If a cached copy exists,
- * return it immediately and refresh the
- * cache from the network in the background.
- *
- * Used by song HTML and song JSON.
- */
-async function cacheFirstThenRefresh(
-    event,
-    request,
-    cacheRequest
-) {
-
-    const cachedResponse =
-        await caches.match(cacheRequest)
-
-        ||
-
-        await caches.match(request);
-
-
-    const refresh =
-        fetch(
-            request,
-            { cache: "no-cache" }
-        )
-
-            .then(response => {
-
-                if (!response.ok) {
-                    return;
-                }
-
-                return caches.open(CACHE_NAME)
-
-                    .then(cache => {
-
-                        return cache.put(
-                            cacheRequest,
-                            response
-                        );
-                    });
-            })
-
-            .catch(() => {
-                /*
-                 * Network unavailable.
-                 * Keep existing cache.
-                 */
-            });
-
-
-    if (cachedResponse) {
-
-        event.waitUntil(refresh);
-
-        return cachedResponse;
-    }
-
-
-    const response =
-        await fetch(
-            request,
-            { cache: "no-cache" }
-        );
-
-
-    if (response.ok) {
-
-        const cache =
-            await caches.open(CACHE_NAME);
-
-        await cache.put(
-            cacheRequest,
-            response.clone()
-        );
-    }
-
-
-    return response;
-}
 
 
 /*
@@ -530,6 +389,14 @@ self.addEventListener(
 self.addEventListener(
     "fetch",
     event => {
+        
+/*        
+        console.log(
+    "SW FETCH:",
+    event.request.url,
+    event.request.cache
+            );       
+*/
 
         const request =
             event.request;
@@ -585,68 +452,59 @@ self.addEventListener(
                 : url.pathname;
 
 
-        const lowerPath =
-            relativePath.toLowerCase();
-
-
         const isCurrentSetlist =
-            lowerPath
+            relativePath
+                .toLowerCase()
                 === "assets/current.setlist.json";
+                
+                
+
+const isUserData =
+    url.searchParams.has("user-data") &&
+    relativePath
+        .toLowerCase()
+        .startsWith("songs/") &&
+    relativePath
+        .toLowerCase()
+        .endsWith(".json");
+        
+        
+        
+          const isSongHtml =
+    relativePath
+        .toLowerCase()
+        .startsWith("songs/") &&
+    relativePath
+        .toLowerCase()
+        .endsWith(".html");
 
 
-        const isAllSetlists =
-            lowerPath
-                === "assets/all.setlists.json";
+const isAllSetlists =
+    relativePath
+        .toLowerCase()
+        === "assets/all.setlists.json";
 
 
-        const isSavedSetlist =
-            lowerPath.startsWith("setlists/")
-            && lowerPath.endsWith(".setlist.json");
-
-
-        const isSongHtml =
-            lowerPath.startsWith("songs/")
-            && lowerPath.endsWith(".html");
-
-
-        /*
-         * User JSON: songs/foo.user.json
-         * (query string optional), or the
-         * legacy songs/foo.json?user-data form.
-         */
-        const isUserJsonFile =
-            lowerPath.startsWith("songs/")
-            && lowerPath.endsWith(".user.json");
-
-        const isUserDataQuery =
-            url.searchParams.has("user-data")
-            && lowerPath.startsWith("songs/")
-            && lowerPath.endsWith(".json");
-
-        const isUserData =
-            isUserJsonFile || isUserDataQuery;
-
-
-        /*
-         * Song JSON: songs/foo.json
-         * but not songs/foo.user.json
-         * and not ?user-data.
-         */
-        const isSongJson =
-            lowerPath.startsWith("songs/")
-            && lowerPath.endsWith(".json")
-            && !isUserData;
-
-
-        const cleanRequest =
-            cleanRequestFor(url);
-
+const isSavedSetlist =
+    relativePath
+        .toLowerCase()
+        .startsWith("setlists/") &&
+    relativePath
+        .toLowerCase()
+        .endsWith(".setlist.json");
+        
 
         /*
          * Current setlist:
          * network first, cached fallback.
          */
         if (isCurrentSetlist) {
+
+            const cleanRequest =
+                new Request(
+                    url.origin +
+                    url.pathname
+                );
 
             event.respondWith(
                 networkFirst(
@@ -662,37 +520,27 @@ self.addEventListener(
         /*
          * User JSON:
          * network first, cached fallback.
-         *
-         * Stored under a key that cannot
-         * overwrite song.json.
          */
         if (isUserData) {
+            
+
+/*            
+                console.log(
+        "SW USER DATA:",
+        url.pathname,
+        "cache mode:",
+        request.cache
+    );
+
+*/
+            const cleanRequest =
+                new Request(
+                    url.origin +
+                    url.pathname
+                );
 
             event.respondWith(
                 networkFirst(
-                    request,
-                    userCacheRequestFor(
-                        url,
-                        relativePath
-                    )
-                )
-            );
-
-            return;
-        }
-
-
-        /*
-         * Song HTML and song JSON:
-         * cache first, then refresh the
-         * cache in the background when
-         * the network is available.
-         */
-        if (isSongHtml || isSongJson) {
-
-            event.respondWith(
-                cacheFirstThenRefresh(
-                    event,
                     request,
                     cleanRequest
                 )
@@ -718,19 +566,108 @@ self.addEventListener(
                         }
 
 
-                        if (isAllSetlists || isSavedSetlist) {
+                        
+if (isAllSetlists) {
 
-                            const cleanCachedResponse =
-                                await caches.match(
-                                    cleanRequest
-                                );
+    const cleanRequest =
+        new Request(
+            url.origin +
+            url.pathname
+        );
 
-                            if (cleanCachedResponse) {
+    const cleanCachedResponse =
+        await caches.match(
+            cleanRequest
+        );
 
-                                return cleanCachedResponse;
-                            }
-                        }
+    if (cleanCachedResponse) {
 
+        return cleanCachedResponse;
+    }
+}
+
+
+/*
+ * Look for the clean cached saved setlist.
+ */
+if (isSavedSetlist) {
+
+    const cleanRequest =
+        new Request(
+            url.origin +
+            url.pathname
+        );
+
+    const cleanCachedResponse =
+        await caches.match(
+            cleanRequest
+        );
+
+    if (cleanCachedResponse) {
+
+        return cleanCachedResponse;
+    }
+}       
+        
+        
+/*
+ * Existing song handling.
+ */
+
+        
+if (isSongHtml) {
+
+    const cleanRequest =
+        new Request(
+            url.origin +
+            url.pathname
+        );
+
+
+    const cleanCachedResponse =
+        await caches.match(
+            cleanRequest
+        );
+
+
+    if (cleanCachedResponse) {
+
+        /*
+         * Return the cached song immediately.
+         */
+        const refreshSong =
+            fetch(request)
+
+                .then(response => {
+
+                    if (!response.ok) {
+                        return;
+                    }
+
+                    return caches.open(CACHE_NAME)
+
+                        .then(cache => {
+
+                            return cache.put(
+                                cleanRequest,
+                                response
+                            );
+                        });
+                })
+
+                .catch(() => {
+                    /*
+                     * Network unavailable.
+                     * Keep existing cache.
+                     */
+                });
+
+
+        event.waitUntil(refreshSong);
+
+        return cleanCachedResponse;
+    }
+}
 
                         /*
                          * Nothing cached.
@@ -751,7 +688,24 @@ self.addEventListener(
                                 );
 
 
-                            if (isAllSetlists || isSavedSetlist) {
+                            /*
+                             * Store song HTML without
+                             * query parameters.
+                             */
+                            
+                            if (
+                                isSongHtml ||
+                                isCurrentSetlist ||
+                                isSavedSetlist
+                                ) {
+                            
+
+                                const cleanRequest =
+                                    new Request(
+                                        url.origin +
+                                        url.pathname
+                                    );
+
 
                                 await cache.put(
                                     cleanRequest,
@@ -851,13 +805,12 @@ self.addEventListener(
                     console.error(
                         "Song2HTML: core update failed",
                         error
-                    );
-                })
-        );
-    }
+                            
+                            );
+                } ) );
+            }
 );
-
-
+                        
 /*
  * Settings can send:
  *
@@ -977,6 +930,7 @@ self.addEventListener(
                     }
                 })
         );
-    }
-);
-
+    });
+               
+                
+                

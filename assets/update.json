@@ -30,6 +30,9 @@
         "./manifest.json",
         "./setlists.html",
         "./settings.html",
-        "./sw.js"
+        "./sw.js",
+        "./sw.js-chat",
+        "./sw.js-grok1",
+        "./sw.js-grok2"
     ]
 }

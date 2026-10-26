@@ -73,7 +73,7 @@
 
 /* A song already present in the current setlist. */
 .in-current-setlist {
-    opacity: 0.4;
+    opacity: 0.5;
 }
 
 
@@ -89,7 +89,7 @@
  */
 .song-list-entry.setlist-duplicate
 {
-    background-color: rgba(255, 200, 0, 0.15);
+    background-color: rgba(255, 200, 0, 0.35);
 }
 
 
@@ -281,7 +281,17 @@
 
     padding: 0.8rem;
 
-    background: rgba(128, 128, 128, 0.08);
+/*    background: rgba(128, 128, 128, 0.08);   */
 
     border-radius: 0.4rem;
 }
+
+
+/*
+ * Prevent Android's native link callout in the Current
+ * Setlist pane so long-press can be used for reordering.
+ */
+#current-setlist a {
+    -webkit-touch-callout: none;
+}
+

@@ -85,7 +85,7 @@ const autoScrollControls =
 
 if (
     autoScrollControls &&
-    showAutoScrollControls !== "true"
+    showAutoScrollControls === "false"
 )
 {
     autoScrollControls.style.display =

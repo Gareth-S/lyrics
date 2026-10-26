@@ -969,7 +969,7 @@ function showLastUpdate() {
 
 
     element.textContent =
-        date.toLocaleString();
+        date.toLocaleString('en-GB');
 }
 
 

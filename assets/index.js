@@ -138,7 +138,13 @@ button.addEventListener(
             "false"
         );
 
+        localStorage.setItem(
+            "show-auto-scroll-controls",
+            "true"
+        );
 
+        
+        
         /*
          * Clear all note selections first.
          *

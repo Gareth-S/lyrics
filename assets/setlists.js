@@ -94,7 +94,21 @@ function populateCatalogue(songs)
 
    let currentSetlistName =
     "Current setlist";     
-        
+
+                /*----------------------------------------------------------*/
+/* Prevent a completed drag from opening the song           */
+/*----------------------------------------------------------*/
+
+/*
+ * Remember when a setlist drag finishes.
+ *
+ * Mobile browsers can sometimes generate a click after a
+ * drag. Ignore that click briefly so a reordered song does
+ * not open accidentally when the finger is released.
+ */
+let setlistDragEndedAt = 0;
+                
+                
         
 document.addEventListener(
     "DOMContentLoaded",
@@ -1295,6 +1309,43 @@ function initialiseSortable()
  * not have.
  */
 
+
+/*
+ * Ignore accidental clicks immediately after a reorder.
+ * Normal taps still open songs as usual.
+ */
+setlist.addEventListener(
+    "click",
+    function (event)
+    {
+        if (
+            Date.now() - setlistDragEndedAt < 500
+        )
+        {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    },
+    true
+);
+
+
+/*
+ * Stop the mobile browser opening its link context menu
+ * when a finger is held on a song in the current setlist.
+ *
+ * This allows SortableJS to handle the long-press instead.
+ */
+setlist.addEventListener(
+    "contextmenu",
+    function (event)
+    {
+        event.preventDefault();
+    }
+);
+
+
+
 new Sortable(
     setlist,
     {
@@ -1304,9 +1355,24 @@ new Sortable(
             put: true
         },
 
+
         sort: true,
 
-        handle: ".song-drag-handle",
+        /*
+         * Touch-friendly reordering:
+         *
+         * A short hold activates dragging anywhere on a
+         * setlist entry, instead of requiring the small
+         * arrow handle. Ordinary taps still open songs.
+         */
+        delay: 280,
+        delayOnTouchOnly: true,
+        touchStartThreshold: 4,
+        fallbackTolerance: 3,
+        
+        
+/*        handle: ".song-drag-handle",   */
+
 
 
         onAdd: function (event)
@@ -1355,9 +1421,19 @@ new Sortable(
  * Rebuild navigation indexes after songs are reordered.
  */
  
- 
-onEnd: function ()
+
+/*
+ * Refresh setlist details after a drag finishes.
+ * Record actual reorders so the following click cannot
+ * accidentally open the song that was just moved.
+ */
+onEnd: function (event)
 {
+    if (event.oldIndex !== event.newIndex)
+    {
+        setlistDragEndedAt = Date.now();
+    }
+
     updateSetlistLinks();
     updateDuplicateMarkers();
     updateBreakLabels();

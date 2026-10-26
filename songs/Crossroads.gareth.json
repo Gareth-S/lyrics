@@ -10,6 +10,10 @@
     "inline": {
         "line-3": [
             "Sometimes"
+        ],
+        "line-4": [
+            "Often"
         ]
-    }
+    },
+    "scrollSpeed": 22
 }
